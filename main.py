@@ -13,15 +13,15 @@ screen = pygame.display.set_mode((1920, 1080))
 clock = pygame.time.Clock()
 
 # background video
-video_path = "lvl1.mp4"
+video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # scope
-scope = pygame.image.load('scope.png')
+scope = pygame.image.load('Assets/Hud/scope.png')
 scope = pygame.transform.scale(scope, (70, 70))
 
 # birds sprite blue
-sprite_sheet_blue = pygame.image.load("birdFlyBlue.png").convert_alpha()
+sprite_sheet_blue = pygame.image.load("Assets/Birds/birdFlyBlue.png").convert_alpha()
 sprite_sheet_blue = pygame.transform.scale(sprite_sheet_blue, (500, 400))
 
 SpritePerRow_Blue = 5
@@ -30,7 +30,7 @@ SpriteWidth_Blue = sprite_sheet_blue.get_width() // SpritePerRow_Blue
 SpriteHeight_Blue = sprite_sheet_blue.get_height() // Rows_Blue
 
 # birds sprite red
-sprite_sheet_red = pygame.image.load("birdFlyRed.png").convert_alpha()
+sprite_sheet_red = pygame.image.load("Assets/Birds/birdFlyRed.png").convert_alpha()
 sprite_sheet_red = pygame.transform.scale(sprite_sheet_red, (500, 400))
 
 SpritePerRow_Red = 5
