@@ -13,15 +13,15 @@ screen = pygame.display.set_mode((1920, 1080))
 clock = pygame.time.Clock()
 
 # background video
-video_path = "lvl1.mp4"
+video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # scope
-scope = pygame.image.load('scope.png')
+scope = pygame.image.load('Assets/Hud/scope.png')
 scope = pygame.transform.scale(scope, (70, 70))
 
 # birds sprite blue
-sprite_sheet_blue = pygame.image.load("birdFlyBlue.png").convert_alpha()
+sprite_sheet_blue = pygame.image.load("Assets/Birds/birdFlyBlue.png").convert_alpha()
 sprite_sheet_blue = pygame.transform.scale(sprite_sheet_blue, (500, 400))
 
 SpritePerRow_Blue = 5
@@ -30,13 +30,22 @@ SpriteWidth_Blue = sprite_sheet_blue.get_width() // SpritePerRow_Blue
 SpriteHeight_Blue = sprite_sheet_blue.get_height() // Rows_Blue
 
 # birds sprite red
-sprite_sheet_red = pygame.image.load("birdFlyRed.png").convert_alpha()
+sprite_sheet_red = pygame.image.load("Assets/Birds/birdFlyRed.png").convert_alpha()
 sprite_sheet_red = pygame.transform.scale(sprite_sheet_red, (500, 400))
 
 SpritePerRow_Red = 5
 Rows_Red = 4
 SpriteWidth_Red = sprite_sheet_red.get_width() // SpritePerRow_Red
 SpriteHeight_Red = sprite_sheet_red.get_height() // Rows_Red
+
+# birds sprite blue
+sprite_sheet_yellow = pygame.image.load("Assets/Birds/birdFlyYellow.png").convert_alpha()
+sprite_sheet_yellow = pygame.transform.scale(sprite_sheet_yellow, (500, 400))
+
+SpritePerRow_Yellow = 5
+Rows_Yellow = 4
+SpriteWidth_Yellow = sprite_sheet_yellow.get_width() // SpritePerRow_Yellow
+SpriteHeight_Yellow = sprite_sheet_yellow.get_height() // Rows_Yellow
 
 #timer
 game_duration = 40
@@ -54,6 +63,7 @@ score = 0
 blink_time = 0
 blink_duration = 100
 
+death_times = {}
 # game start
 running = True
 while running:
@@ -74,9 +84,17 @@ while running:
             for bird in birds:
                 if bird.check_collision(mouse_pos):
                     blink_time = pygame.time.get_ticks()
-                    birds.remove(bird)
-                    score += 1
+                    bird.kill()
+                    death_times[bird] = pygame.time.get_ticks()
+                    score += bird.value
                     break
+
+    #delete bird after dead
+    current_time = pygame.time.get_ticks()
+    for bird in list(birds):
+        if bird in death_times and current_time - death_times[bird] >= 3000:
+            birds.remove(bird)
+            del death_times[bird]
 
     # Read frame from video
     ret, frame = cap.read()
@@ -97,20 +115,26 @@ while running:
 
     if random.randint(0, 100) <= 1:
         spawn_points = random.choice(spawn_point)
-        bird_type = random.choice(["blue", "red"])
+        bird_type = random.choice(["blue", "red", "yellow"])
         if bird_type == "blue":
-            new_bird = Bird(spawn_points[0], spawn_points[1], False, True, random.choice([True, False]),
+            new_bird = Bird(1, spawn_points[0], spawn_points[1], random.choice([0.75, 1, 1.25 , 1.5]),1,False, True, random.choice([True, False]),
                             random.choice([True, False]),
                             sprite_sheet_blue, SpritePerRow_Blue, SpriteWidth_Blue, SpriteHeight_Blue)
+
         elif bird_type == "red":
-            new_bird = Bird(spawn_points[0], spawn_points[1], False, True, random.choice([True, False]),
+            new_bird = Bird(2,spawn_points[0], spawn_points[1],random.choice([0.9, 1.1, 1.3 , 1.7]) ,0.3,False, True, random.choice([True, False]),
                             random.choice([True, False]),
                             sprite_sheet_red, SpritePerRow_Red, SpriteWidth_Red, SpriteHeight_Red)
+        elif bird_type == "yellow":
+            new_bird = Bird(10,spawn_points[0], spawn_points[1], 9,1 ,False, True, random.choice([True, False]),
+                            random.choice([True, False]),
+                            sprite_sheet_yellow, SpritePerRow_Yellow, SpriteWidth_Yellow, SpriteHeight_Yellow)
+
         birds.append(new_bird)
 
     # Draw birds
     for bird in birds:
-        bird.update(birdSpeed, screen)
+        bird.update(screen)
         bird.draw(screen)
 
     # Blink effect
