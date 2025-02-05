@@ -1,153 +1,131 @@
 import pygame
-from Birds import Bird
-import random
+import sys
+from Button import ImageButton
 import cv2
-import time
+from Game import Game
 
-# pygame initial settings
 pygame.init()
 pygame.font.init()
+WIDTH, HEIGHT = 1920, 1080
 my_font = pygame.font.SysFont('Comic Sans MS', 30)
-pygame.mouse.set_visible(False)
-screen = pygame.display.set_mode((1920, 1080))
-clock = pygame.time.Clock()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Duck Hunt")
 
-# background video
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-# scope
-scope = pygame.image.load('Assets/Hud/scope.png')
-scope = pygame.transform.scale(scope, (70, 70))
+start_button = ImageButton(WIDTH / 2 - (252 / 2), 350, 252, 74, "Нова гра", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
+settings_button = ImageButton(WIDTH / 2 - (252 / 2), 450, 252, 74, "Налаштування", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
+exit_button = ImageButton(WIDTH / 2 - (252 / 2), 550, 252, 74, "Вихід", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
 
-# birds sprite blue
-sprite_sheet_blue = pygame.image.load("Assets/Birds/birdFlyBlue.png").convert_alpha()
-sprite_sheet_blue = pygame.transform.scale(sprite_sheet_blue, (500, 400))
 
-SpritePerRow_Blue = 5
-Rows_Blue = 4
-SpriteWidth_Blue = sprite_sheet_blue.get_width() // SpritePerRow_Blue
-SpriteHeight_Blue = sprite_sheet_blue.get_height() // Rows_Blue
+def main_menu():
+    running = True
+    while running:
 
-# birds sprite red
-sprite_sheet_red = pygame.image.load("Assets/Birds/birdFlyRed.png").convert_alpha()
-sprite_sheet_red = pygame.transform.scale(sprite_sheet_red, (500, 400))
+        # video bg
+        ret, frame = cap.read()
+        if not ret:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
+            continue
 
-SpritePerRow_Red = 5
-Rows_Red = 4
-SpriteWidth_Red = sprite_sheet_red.get_width() // SpritePerRow_Red
-SpriteHeight_Red = sprite_sheet_red.get_height() // Rows_Red
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.resize(frame, (1920, 1080))
+        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
+        screen.blit(frame_surface, (0, 0))
 
-# birds sprite blue
-sprite_sheet_yellow = pygame.image.load("Assets/Birds/birdFlyYellow.png").convert_alpha()
-sprite_sheet_yellow = pygame.transform.scale(sprite_sheet_yellow, (500, 400))
+        font = pygame.font.SysFont('Comic Sans MS', 72)
+        text_surface = font.render("Duck Hunt", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(WIDTH/2, 270))
+        screen.blit(text_surface, text_rect)
 
-SpritePerRow_Yellow = 5
-Rows_Yellow = 4
-SpriteWidth_Yellow = sprite_sheet_yellow.get_width() // SpritePerRow_Yellow
-SpriteHeight_Yellow = sprite_sheet_yellow.get_height() // Rows_Yellow
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                sys.exit()
 
-#timer
-game_duration = 40
-start_time = time.time()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
 
-# bird objects
-birds = []
-birdSpeed = 1
+            if event.type == pygame.USEREVENT and event.button == start_button:
+                level_one = Game()
+                level_one.start_level()
 
-# spawner
-spawn_point = [(-30, 0), (-30, 400), (1700, 400), (1700, 0)]
+            if event.type == pygame.USEREVENT and event.button == settings_button:
+                settings_menu()
 
-# player statistic
-score = 0
-blink_time = 0
-blink_duration = 100
+            if event.type == pygame.USEREVENT and event.button == exit_button:
+                running = False
+                pygame.quit()
+                sys.exit()
 
-death_times = {}
-# game start
-running = True
-while running:
-    current_time = time.time()
-    elapsed_time = current_time - start_time
+            for btn in [start_button, settings_button, exit_button]:
+                btn.handle_event(event)
 
-    if elapsed_time >= game_duration:
-        print(f"Game is over. Your Score: {score}")
-        running = False
-        break
+        for btn in [start_button, settings_button, exit_button]:
+            btn.check_hover(pygame.mouse.get_pos())
+            btn.draw(screen)
 
-    for event in pygame.event.get():
-        # quit function
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            for bird in birds:
-                if bird.check_collision(mouse_pos):
-                    blink_time = pygame.time.get_ticks()
-                    bird.kill()
-                    death_times[bird] = pygame.time.get_ticks()
-                    score += bird.value
-                    break
+        pygame.display.flip()
 
-    #delete bird after dead
-    current_time = pygame.time.get_ticks()
-    for bird in list(birds):
-        if bird in death_times and current_time - death_times[bird] >= 3000:
-            birds.remove(bird)
-            del death_times[bird]
+    cap.release()
+    pygame.quit()
 
-    # Read frame from video
-    ret, frame = cap.read()
-    if not ret:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
-        continue
+def settings_menu():
+    audio_button = ImageButton(WIDTH / 2 - (252 / 2), 350, 252, 74, "Аудіо", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
+    video_button = ImageButton(WIDTH / 2 - (252 / 2), 450, 252, 74, "Відео","Assets/Buttons/green_button.png", "Assets/Buttons/green_button_hover.png","Assets/Sounds/click.mp3")
+    back_button = ImageButton(WIDTH / 2 - (252 / 2), 550, 252, 74, "Назад", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
 
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = cv2.resize(frame, (1920, 1080))
-    frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-    screen.blit(frame_surface, (0, 0))
+    running = True
+    while running:
 
-    # Draw HUD
-    text_surface = my_font.render("Score : " + str(score), False, (0, 0, 0))
-    screen.blit(text_surface, (1300, 100))
+        # video bg
+        ret, frame = cap.read()
+        if not ret:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
+            continue
 
-    # Spawning birds
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.resize(frame, (1920, 1080))
+        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
+        screen.blit(frame_surface,  (0, 0))
 
-    if random.randint(0, 100) <= 1:
-        spawn_points = random.choice(spawn_point)
-        bird_type = random.choice(["blue", "red", "yellow"])
-        if bird_type == "blue":
-            new_bird = Bird(1, spawn_points[0], spawn_points[1], random.choice([0.75, 1, 1.25 , 1.5]),1,False, True, random.choice([True, False]),
-                            random.choice([True, False]),
-                            sprite_sheet_blue, SpritePerRow_Blue, SpriteWidth_Blue, SpriteHeight_Blue)
+        font = pygame.font.SysFont('Comic Sans MS', 72)
+        text_surface = font.render("Settings", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(WIDTH / 2, 270))
+        screen.blit(text_surface, text_rect)
 
-        elif bird_type == "red":
-            new_bird = Bird(2,spawn_points[0], spawn_points[1],random.choice([0.9, 1.1, 1.3 , 1.7]) ,0.3,False, True, random.choice([True, False]),
-                            random.choice([True, False]),
-                            sprite_sheet_red, SpritePerRow_Red, SpriteWidth_Red, SpriteHeight_Red)
-        elif bird_type == "yellow":
-            new_bird = Bird(10,spawn_points[0], spawn_points[1], 9,1 ,False, True, random.choice([True, False]),
-                            random.choice([True, False]),
-                            sprite_sheet_yellow, SpritePerRow_Yellow, SpriteWidth_Yellow, SpriteHeight_Yellow)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                sys.exit()
 
-        birds.append(new_bird)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    main_menu()
 
-    # Draw birds
-    for bird in birds:
-        bird.update(screen)
-        bird.draw(screen)
+            if event.type == pygame.USEREVENT and event.button == back_button:
+                main_menu()
 
-    # Blink effect
-    if pygame.time.get_ticks() - blink_time < blink_duration:
-        screen.fill((255, 255, 255))
+            for btn in [audio_button, video_button, back_button]:
+                btn.handle_event(event)
 
-    # Draw scope
-    mouse_x, mouse_y = pygame.mouse.get_pos()
-    scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
-    screen.blit(scope, scope_rect)
+        for btn in [audio_button, video_button, back_button]:
+            btn.check_hover(pygame.mouse.get_pos())
+            btn.draw(screen)
 
-    pygame.display.flip()
-    clock.tick(60)
+        pygame.display.flip()
 
-cap.release()
-pygame.quit()
+    cap.release()
+    pygame.quit()
+
+def main():
+    main_menu()
+
+if __name__ == "__main__":
+    main()
