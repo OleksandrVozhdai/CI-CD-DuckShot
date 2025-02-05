@@ -5,10 +5,11 @@ import random
 import time
 
 class Bird:
-    def __init__(self, value, x, y, speed, DirectionTimeChange, right, left, up, down, sprite_sheet, SpritePerRow, SpriteWidth, SpriteHeight):
+    def __init__(self, value, x, y, speed, hp, DirectionTimeChange, right, left, up, down, sprite_sheet, SpritePerRow, SpriteWidth, SpriteHeight):
         self.value = value
         self.x = x
         self.y = y
+        self.hp = hp
         self.birdSpeed = speed
         self.current_frame = 0
         self.frame_delay = 5
