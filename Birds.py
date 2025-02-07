@@ -1,5 +1,3 @@
-from operator import truediv
-
 import pygame
 import random
 import time
@@ -28,7 +26,6 @@ class Bird:
         self.last_choice_time = time.time()
         self.gravity = 2
         self.alive = True
-        self.frozen_frame = None
         self.DirectionTimeChange = DirectionTimeChange
 
     def check_collision(self, mouse_pos):
@@ -44,7 +41,7 @@ class Bird:
         return self.sprite_sheet.subsurface(pygame.Rect(x, y, self.SpriteWidth, self.SpriteHeight))
 
 
-    def update(self, screen):
+    def update(self):
         if self.alive:
             current_time = time.time()
 

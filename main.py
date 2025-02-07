@@ -8,22 +8,36 @@ pygame.init()
 pygame.font.init()
 WIDTH, HEIGHT = 1920, 1080
 my_font = pygame.font.SysFont('Comic Sans MS', 30)
+font = pygame.font.SysFont('Comic Sans MS', 72)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Duck Hunt")
 
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-start_button = ImageButton(WIDTH / 2 - (252 / 2), 350, 252, 74, "Нова гра", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
-settings_button = ImageButton(WIDTH / 2 - (252 / 2), 450, 252, 74, "Налаштування", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
-exit_button = ImageButton(WIDTH / 2 - (252 / 2), 550, 252, 74, "Вихід", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
+#buttons init
+start_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/new_game_button.png","Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3")
+settings_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "", "Assets/Buttons/settings_button.png","Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3")
+exit_button = ImageButton(WIDTH / 2 - (252 / 2), 600, 252, 74, "", "Assets/Buttons/exit_button.png","Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3")
 
+def draw_text_with_outline(text, font, text_color, outline_color, x, y):
+    text_surface = font.render(text, True, text_color)
+    text_outline = font.render(text, True, outline_color)
+
+    text_rect = text_surface.get_rect(center=(x, y))
+
+    screen.blit(text_outline, text_rect.move(2, 2))
+    screen.blit(text_outline, text_rect.move(-2, -2))
+    screen.blit(text_outline, text_rect.move(2, -2))
+    screen.blit(text_outline, text_rect.move(-2, 2))
+
+    screen.blit(text_surface, text_rect)
 
 def main_menu():
     running = True
     while running:
 
-        # video bg
+        # video bg will be swapped later
         ret, frame = cap.read()
         if not ret:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
@@ -34,10 +48,8 @@ def main_menu():
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface, (0, 0))
 
-        font = pygame.font.SysFont('Comic Sans MS', 72)
-        text_surface = font.render("Duck Hunt", True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=(WIDTH/2, 270))
-        screen.blit(text_surface, text_rect)
+        #Duck hunt menu banner
+        draw_text_with_outline("Duck Hunt", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -45,45 +57,53 @@ def main_menu():
                 pygame.quit()
                 sys.exit()
 
+            #exit by ESC in menu
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
                     pygame.quit()
                     sys.exit()
 
+            #start level button
             if event.type == pygame.USEREVENT and event.button == start_button:
                 levelone = Game()
-                levelone.startlevel()
+                levelone.start_level()
 
+            #settings button
             if event.type == pygame.USEREVENT and event.button == settings_button:
                 settings_menu()
 
+            #exit button
             if event.type == pygame.USEREVENT and event.button == exit_button:
                 running = False
                 pygame.quit()
                 sys.exit()
 
+            #button event handler, checking for click
             for btn in [start_button, settings_button, exit_button]:
                 btn.handle_event(event)
 
+        #checking for hover and drawing buttons
         for btn in [start_button, settings_button, exit_button]:
             btn.check_hover(pygame.mouse.get_pos())
             btn.draw(screen)
 
         pygame.display.flip()
 
+    #release video data
     cap.release()
     pygame.quit()
 
 def settings_menu():
-    audio_button = ImageButton(WIDTH / 2 - (252 / 2), 350, 252, 74, "Аудіо", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
-    video_button = ImageButton(WIDTH / 2 - (252 / 2), 450, 252, 74, "Відео","Assets/Buttons/green_button.png", "Assets/Buttons/green_button_hover.png","Assets/Sounds/click.mp3")
-    back_button = ImageButton(WIDTH / 2 - (252 / 2), 550, 252, 74, "Назад", "Assets/Buttons/green_button.png","Assets/Buttons/green_button_hover.png", "Assets/Sounds/click.mp3")
+    #buttons init
+    audio_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/audio_button.png","Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3")
+    video_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "","Assets/Buttons/video_button.png", "Assets/Buttons/video_button_hover.png","Assets/Sounds/click.mp3")
+    back_button = ImageButton(WIDTH / 2 - (252 / 2), 600, 252, 74, "", "Assets/Buttons/exit_button.png","Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3")
 
     running = True
     while running:
 
-        # video bg
+        # video bg will be swapped later
         ret, frame = cap.read()
         if not ret:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
@@ -94,10 +114,8 @@ def settings_menu():
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface,  (0, 0))
 
-        font = pygame.font.SysFont('Comic Sans MS', 72)
-        text_surface = font.render("Settings", True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=(WIDTH / 2, 270))
-        screen.blit(text_surface, text_rect)
+        #Duck hunt menu banner
+        draw_text_with_outline("Settings", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -105,22 +123,27 @@ def settings_menu():
                 pygame.quit()
                 sys.exit()
 
+            #exit by ESC in menu
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     main_menu()
 
+            #back button to main menu
             if event.type == pygame.USEREVENT and event.button == back_button:
                 main_menu()
 
+            #click handler
             for btn in [audio_button, video_button, back_button]:
                 btn.handle_event(event)
 
+        #draw and check hover for buttons
         for btn in [audio_button, video_button, back_button]:
             btn.check_hover(pygame.mouse.get_pos())
             btn.draw(screen)
 
         pygame.display.flip()
 
+    #release video data
     cap.release()
     pygame.quit()
 
