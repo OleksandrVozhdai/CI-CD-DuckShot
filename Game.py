@@ -58,7 +58,7 @@ class Game:
 
         #Bird parameters
         self.birdSpeed = 1
-        self.spawn_point = [(-60, 0), (-60, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
+        self.spawn_point = [(-200, 0), (-200, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
         self.ground_spawn_point = [0, 1000]
         self.birdLevelCount = 11 #how many birds can be on screen. Recommended number 9-13
 
@@ -137,7 +137,7 @@ class Game:
         #Remove birds that are dead for too long
         current_time = pygame.time.get_ticks()
         for bird in list(self.birds):
-            if bird in self.death_times and current_time - self.death_times[bird] >= 3000:
+            if bird in self.death_times and current_time - self.death_times[bird] >= 5000:
                 self.birds.remove(bird)
                 del self.death_times[bird]
 
@@ -152,7 +152,7 @@ class Game:
         #reloading
         if self.ammo <= 0:
             if current_time - self.last_shot_time >= 3000:
-                self.ammo = 5
+                self.ammo = 8
             return
 
     def spawn_bird(self):
