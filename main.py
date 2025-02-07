@@ -6,10 +6,13 @@ from Game import Game
 
 pygame.init()
 pygame.font.init()
-WIDTH, HEIGHT = 1920, 1080
+info = pygame.display.Info()
+WIDTH, HEIGHT = info.current_w, info.current_h
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
 my_font = pygame.font.SysFont('Comic Sans MS', 30)
 font = pygame.font.SysFont('Comic Sans MS', 72)
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
 pygame.display.set_caption("Duck Hunt")
 
 video_path = "Assets/Background/lvl1.mp4"
@@ -44,7 +47,7 @@ def main_menu():
             continue
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (WIDTH, HEIGHT))
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface, (0, 0))
 
@@ -110,7 +113,7 @@ def settings_menu():
             continue
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (WIDTH, HEIGHT))
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface,  (0, 0))
 

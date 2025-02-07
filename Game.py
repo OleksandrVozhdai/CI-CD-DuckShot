@@ -9,7 +9,9 @@ class Game:
     def __init__(self):
         self.start_time = None #it does nothing but don't touch it. Attribute warning
         self.running = None #it does nothing but don't touch it. Attribute warning
-        self.screen = pygame.display.set_mode((1920, 1080))
+        info = pygame.display.Info()
+        self.WIDTH, self.HEIGHT = info.current_w, info.current_h
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self.clock = pygame.time.Clock()
         self.video_path = "Assets/Background/lvl1.mp4"
         self.cap = cv2.VideoCapture(self.video_path)
@@ -56,7 +58,7 @@ class Game:
 
         #Bird parameters
         self.birdSpeed = 1
-        self.spawn_point = [(-30, 0), (-30, 400), (1700, 400), (1700, 0)]
+        self.spawn_point = [(-60, 0), (-60, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
         self.ground_spawn_point = [0, 1000]
         self.birdLevelCount = 11 #how many birds can be on screen. Recommended number 9-13
 
@@ -196,13 +198,13 @@ class Game:
             self.birdLevelCount -= 1
 
     def draw_game_state(self):
-        #Video background
+        # Video background
         ret, frame = self.cap.read()
         if not ret:
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (self.WIDTH, self.HEIGHT))
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         self.screen.blit(frame_surface, (0, 0))
 
@@ -210,29 +212,35 @@ class Game:
         for bird in self.birds:
             bird.draw(self.screen)
 
-        #Draw HUD
-        score_text = self.my_font.render("Score : " + str(self.score), False, (0, 0, 0))
-        timer_text = self.my_font.render("Time left : " + str(int(self.level_timer - (time.time() - self.start_time))), False, (0, 0, 0))
-        self.screen.blit(score_text, (220, 120))
-        self.screen.blit(timer_text, (420, 120))
+        # Draw HUD
+        padding = self.WIDTH * 0.007
+        score_text = self.my_font.render("Score: " + str(self.score), False, (0, 0, 0))
+        timer_text = self.my_font.render("Time: " + str(int(self.level_timer - (time.time() - self.start_time))), False,
+                                         (0, 0, 0))
 
-        #Blink effect
+        self.screen.blit(score_text, (10, 10))
+        self.screen.blit(timer_text, (10, 10 + score_text.get_height() + padding))
+
+        # Draw Ammo
+        ammo = pygame.image.load('Assets/Hud/ammo.png')
+        ammo = pygame.transform.scale(ammo, (self.WIDTH // 128, self.HEIGHT // 27))
+
+        ammo_y = 10 + score_text.get_height() + timer_text.get_height() + 2 * padding
+        for i in range(self.ammo):
+            self.screen.blit(ammo, (10 + i * (self.WIDTH * 0.012), ammo_y))
+
+        # Blink effect
         if pygame.time.get_ticks() - self.blink_time < self.blink_duration:
             self.screen.fill((255, 255, 255))
 
-        #Draw scope
+        # Draw scope
         mouse_x, mouse_y = pygame.mouse.get_pos()
         scope = pygame.image.load('Assets/Hud/scope.png')
-        scope = pygame.transform.scale(scope, (70, 70))
+        scope = pygame.transform.scale(scope, (self.WIDTH // 27.4, self.HEIGHT // 15.4))
         scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
-
-        #Draw Ammo
-        ammo = pygame.image.load('Assets/Hud/ammo.png')
-        ammo = pygame.transform.scale(ammo, (15, 40))
-
-        for i in range(self.ammo):
-            self.screen.blit(ammo, (220 + i * 20, 170))
         self.screen.blit(scope, scope_rect)
+
+
 
 
 
