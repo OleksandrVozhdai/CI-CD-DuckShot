@@ -239,9 +239,3 @@ class Game:
         scope = pygame.transform.scale(scope, (self.WIDTH // 27.4, self.HEIGHT // 15.4))
         scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
         self.screen.blit(scope, scope_rect)
-
-
-
-
-
-
