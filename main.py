@@ -8,7 +8,7 @@ pygame.init()
 pygame.font.init()
 info = pygame.display.Info()
 WIDTH, HEIGHT = info.current_w, info.current_h
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 my_font = pygame.font.SysFont('Comic Sans MS', 30)
 font = pygame.font.SysFont('Comic Sans MS', 72)
@@ -47,7 +47,7 @@ def main_menu():
             continue
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (WIDTH, HEIGHT))
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface, (0, 0))
 
@@ -129,7 +129,7 @@ def select_level():
             continue
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (WIDTH, HEIGHT))
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         screen.blit(frame_surface, (0, 0))
 
