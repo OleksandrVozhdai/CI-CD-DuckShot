@@ -11,7 +11,6 @@ class Game:
         self.running = None #it does nothing but don't touch it. Attribute warning
         info = pygame.display.Info()
         self.WIDTH, self.HEIGHT = info.current_w, info.current_h
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.FULLSCREEN)
         self.clock = pygame.time.Clock()
         self.video_path = "Assets/Background/lvl1.mp4"
         self.cap = cv2.VideoCapture(self.video_path)
@@ -58,7 +57,6 @@ class Game:
 
         #Bird parameters
         self.birdSpeed = 1
-        self.spawn_point = [(-60, 0), (-60, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
         self.ground_spawn_point = [0, 1000]
         self.birdLevelCount = 11 #how many birds can be on screen. Recommended number 9-13
 
@@ -137,7 +135,6 @@ class Game:
         #Remove birds that are dead for too long
         current_time = pygame.time.get_ticks()
         for bird in list(self.birds):
-            if bird in self.death_times and current_time - self.death_times[bird] >= 3000:
                 self.birds.remove(bird)
                 del self.death_times[bird]
 
@@ -152,7 +149,6 @@ class Game:
         #reloading
         if self.ammo <= 0:
             if current_time - self.last_shot_time >= 3000:
-                self.ammo = 5
             return
 
     def spawn_bird(self):
@@ -213,7 +209,6 @@ class Game:
             bird.draw(self.screen)
 
         # Draw HUD
-        padding = self.WIDTH * 0.007  # Відступ між елементами
         score_text = self.my_font.render("Score: " + str(self.score), False, (0, 0, 0))
         timer_text = self.my_font.render("Time: " + str(int(self.level_timer - (time.time() - self.start_time))), False,
                                          (0, 0, 0))
