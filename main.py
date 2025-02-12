@@ -14,6 +14,7 @@ my_font = pygame.font.SysFont('Comic Sans MS', 30)
 font = pygame.font.SysFont('Comic Sans MS', 72)
 
 pygame.display.set_caption("Duck Hunt")
+#test comm
 
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
