@@ -3,6 +3,7 @@ import sys
 from Button import ImageButton
 import cv2
 from Game import Game
+from Settings import Settings
 
 pygame.init()
 pygame.font.init()
@@ -17,6 +18,8 @@ pygame.display.set_caption("Duck Hunt")
 
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
+
+settings = Settings(WIDTH, HEIGHT)
 
 #buttons init
 start_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/new_game_button.png","Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3")
@@ -72,8 +75,9 @@ def main_menu():
                 select_level()
 
             #settings button
+            # settings button
             if event.type == pygame.USEREVENT and event.button == settings_button:
-                settings_menu()
+                settings.settings_menu(screen, font, cap, draw_text_with_outline, main_menu)
 
             #exit button
             if event.type == pygame.USEREVENT and event.button == exit_button:
@@ -168,58 +172,6 @@ def select_level():
         pygame.display.flip()
 
     #release video data
-    cap.release()
-    pygame.quit()
-
-def settings_menu():
-    #buttons init
-    audio_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/audio_button.png", "Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3")
-    video_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "","Assets/Buttons/video_button.png", "Assets/Buttons/video_button_hover.png", "Assets/Sounds/click.mp3")
-    back_button = ImageButton(WIDTH / 2 - (252 / 2), 600, 252, 74, "", "Assets/Buttons/exit_button.png", "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3")
-
-    running = True
-    while running:
-        # video bg will be swapped later
-        ret, frame = cap.read()
-        if not ret:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
-            continue
-
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (WIDTH, HEIGHT)) # use dynamic screen resolution
-        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-        screen.blit(frame_surface,  (0, 0))
-
-        # Duck hunt menu banner
-        draw_text_with_outline("Settings", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                pygame.quit()
-                sys.exit()
-
-            # exit by ESC in menu
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    main_menu()
-
-            # back button to main menu
-            if event.type == pygame.USEREVENT and event.button == back_button:
-                main_menu()
-
-            # click handler
-            for btn in [audio_button, video_button, back_button]:
-                btn.handle_event(event)
-
-        # draw and check hover for buttons
-        for btn in [audio_button, video_button, back_button]:
-            btn.check_hover(pygame.mouse.get_pos())
-            btn.draw(screen)
-
-        pygame.display.flip()
-
-    # release video data
     cap.release()
     pygame.quit()
 
