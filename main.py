@@ -22,9 +22,12 @@ cap = cv2.VideoCapture(video_path)
 settings = Settings(WIDTH, HEIGHT, cap)
 
 #buttons init
-start_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/new_game_button.png","Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3")
-settings_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "", "Assets/Buttons/settings_button.png","Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3")
-exit_button = ImageButton(WIDTH / 2 - (252 / 2), 600, 252, 74, "", "Assets/Buttons/exit_button.png","Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3")
+start_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/new_game_button.png",
+                           "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
+settings_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "", "Assets/Buttons/settings_button.png",
+                              "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
+exit_button = ImageButton(WIDTH / 2 - (252 / 2), 600, 252, 74, "", "Assets/Buttons/exit_button.png",
+                          "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
 def draw_text_with_outline(text, font, text_color, outline_color, x, y):
     text_surface = font.render(text, True, text_color)
@@ -102,26 +105,26 @@ def main_menu():
 
 def select_level():
     Lbutton1 = ImageButton(WIDTH / 2 - 140, 400, 80, 74, "", "Assets/Buttons/level_but_1.png",
-                               "Assets/Buttons/level_but_hover_1.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_1.png", "Assets/Sounds/click.mp3", settings)
     Lbutton2 = ImageButton(WIDTH / 2 - (70 / 2), 400, 80, 74, "", "Assets/Buttons/level_but_2.png",
-                                  "Assets/Buttons/level_but_hover_2.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_2.png", "Assets/Sounds/click.mp3", settings)
     Lbutton3 = ImageButton(WIDTH / 2 + 70, 400, 80, 74, "", "Assets/Buttons/level_but_3.png",
-                              "Assets/Buttons/level_but_hover_3.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_3.png", "Assets/Sounds/click.mp3", settings)
     Lbutton4 = ImageButton(WIDTH / 2 - 140, 500, 80, 74, "", "Assets/Buttons/level_but_4.png",
-                          "Assets/Buttons/level_but_hover_4.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_4.png", "Assets/Sounds/click.mp3", settings)
     Lbutton5 = ImageButton(WIDTH / 2 - (70 / 2), 500, 80, 74, "", "Assets/Buttons/level_but_5.png",
-                          "Assets/Buttons/level_but_hover_5.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_5.png", "Assets/Sounds/click.mp3", settings)
     Lbutton6 = ImageButton(WIDTH / 2 + 70, 500, 80, 74, "", "Assets/Buttons/level_but_6.png",
-                          "Assets/Buttons/level_but_hover_6.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_6.png", "Assets/Sounds/click.mp3", settings)
     Lbutton7 = ImageButton(WIDTH / 2 - 140, 600, 80, 74, "", "Assets/Buttons/level_but_7.png",
-                          "Assets/Buttons/level_but_hover_7.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_7.png", "Assets/Sounds/click.mp3", settings)
     Lbutton8 = ImageButton(WIDTH / 2 - (70 / 2), 600, 80, 74, "", "Assets/Buttons/level_but_8.png",
-                          "Assets/Buttons/level_but_hover_8.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_8.png", "Assets/Sounds/click.mp3", settings)
     Lbutton9 = ImageButton(WIDTH / 2 + 70, 600, 80, 74, "", "Assets/Buttons/level_but_9.png",
-                          "Assets/Buttons/level_but_hover_9.png", "Assets/Sounds/click.mp3")
+                           "Assets/Buttons/level_but_hover_9.png", "Assets/Sounds/click.mp3", settings)
 
     back_button = ImageButton(WIDTH / 2 - (243 / 2), 700, 252, 74, "", "Assets/Buttons/back_button.png",
-                              "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3")
+                              "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
     running = True
     while running:

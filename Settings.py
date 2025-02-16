@@ -3,7 +3,7 @@ import pygame
 import cv2
 from Button import ImageButton
 
-# Инициализация микшера Pygame
+# Ініціалізація мікшера Pygame
 pygame.mixer.init()
 
 class Settings:
@@ -18,32 +18,36 @@ class Settings:
         self.cap = cap
         self.sound_enabled = True
 
-        # Укорачиваем полосу громкости и корректируем ползунок
-        self.slider_width = self.width // 3  # Новая ширина полоски (короче)
-        self.slider_x_start = (self.width - self.slider_width) // 2  # Центрирование полоски
+        # Вкорочуємо смужку гучності та коригуємо повзунок
+        self.slider_width = self.width // 3  # Нова ширина смужки (коротша)
+        self.slider_x_start = (self.width - self.slider_width) // 2  # Центрування смужки
         self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
         self.slider_dragging = False
 
-        # Загружаем MP3 вместо WAV
+        # Завантажуємо MP3 замість WAV
         self.sound_path = "Assets/Sounds/click.mp3"
         self.sound_loaded = os.path.exists(self.sound_path)
         if self.sound_loaded:
             pygame.mixer.music.load(self.sound_path)
-            pygame.mixer.music.set_volume(self.volume)  # Устанавливаем громкость
+            pygame.mixer.music.set_volume(self.volume)  # Встановлюємо гучність
         else:
-            print(f"⚠️ Файл {self.sound_path} не найден! Звук кнопок отключен.")
+            print(f"⚠️ Файл {self.sound_path} не знайдено! Звук кнопок вимкнено.")
+
+    def get_volume(self):
+        """Повертає поточну гучність для використання в інших частинах гри."""
+        return self.volume
 
     def increase_volume(self):
         self.volume = min(1.0, self.volume + 0.1)
         self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
         if self.sound_loaded:
-            pygame.mixer.music.set_volume(self.volume)  # Обновляем громкость кнопок
+            pygame.mixer.music.set_volume(self.volume)  # Оновлюємо гучність кнопок
 
     def decrease_volume(self):
         self.volume = max(0.0, self.volume - 0.1)
         self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
         if self.sound_loaded:
-            pygame.mixer.music.set_volume(self.volume)  # Обновляем громкость кнопок
+            pygame.mixer.music.set_volume(self.volume)  # Оновлюємо гучність кнопок
 
     def toggle_fullscreen(self):
         self.fullscreen = not self.fullscreen
@@ -94,7 +98,7 @@ class Settings:
                     btn.handle_event(event)
                     if event.type == pygame.MOUSEBUTTONDOWN and btn.rect.collidepoint(event.pos):
                         if self.sound_loaded:
-                            pygame.mixer.music.play()  # Воспроизводим звук при клике
+                            pygame.mixer.music.play()  # Відтворюємо звук при нажатті
 
             for btn in [audio_button, video_button, back_button]:
                 btn.check_hover(pygame.mouse.get_pos())
@@ -124,7 +128,7 @@ class Settings:
 
             draw_text_with_outline("Audio Settings", font, (255, 255, 255), (0, 0, 0), self.width / 2, 180)
 
-            # Отрисовка полосы громкости с новыми границами
+            # Відображення смуги гучності з новими кордонами
             pygame.draw.rect(screen, (255, 255, 255), (self.slider_x_start, 270, self.slider_width, 8))
             pygame.draw.rect(screen, (0, 255, 0), (self.slider_x_start, 270, int(self.volume * self.slider_width), 8))
             pygame.draw.circle(screen, (255, 255, 255), (self.slider_x, 274), 10)
@@ -141,27 +145,27 @@ class Settings:
                     if event.key == pygame.K_ESCAPE:
                         running = False
                         return
-                    elif event.key == pygame.K_m:  # Переключение звука клавишей M
+                    elif event.key == pygame.K_m:  # Перемикання звуку клавішею M
                         if self.volume > 0.0:
                             self.sound_enabled = False
                             self.volume = 0.0
-                            self.slider_x = self.slider_x_start  # Переносим ползунок в 0%
+                            self.slider_x = self.slider_x_start  # Переміщуємо повзунок у 0%
                             if self.sound_loaded:
-                                pygame.mixer.music.set_volume(0.0)  # Полное отключение звука кнопок
+                                pygame.mixer.music.set_volume(0.0)  # Повне вимкнення звуку кнопок
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if abs(event.pos[0] - self.slider_x) <= 10 and 265 <= event.pos[1] <= 285:
                         self.slider_dragging = True
-                    elif mute_button.rect.collidepoint(event.pos):  # Клик по кнопке "Mute"
-                        if self.volume > 0.0:  # Если звук есть, то выключаем
+                    elif mute_button.rect.collidepoint(event.pos):  # Клік по кнопці "Mute"
+                        if self.volume > 0.0:  # Якщо звук є, то вимикаємо
                             self.sound_enabled = False
                             self.volume = 0.0
-                            self.slider_x = self.slider_x_start  # Переносим ползунок в 0%
+                            self.slider_x = self.slider_x_start  # Переміщуємо повзунок у 0%
                             if self.sound_loaded:
-                                pygame.mixer.music.set_volume(0.0)  # Полное отключение звука кнопок
+                                pygame.mixer.music.set_volume(0.0)  # Повне вимкнення звуку кнопок
                         if self.sound_loaded:
                             pygame.mixer.music.play()
-                    elif back_button.rect.collidepoint(event.pos):  # Клик по кнопке "Back"
+                    elif back_button.rect.collidepoint(event.pos):  # Клік по кнопці "Back"
                         if self.sound_loaded:
                             pygame.mixer.music.play()
                         running = False
@@ -174,7 +178,7 @@ class Settings:
                     self.slider_x = max(self.slider_x_start, min(event.pos[0], self.slider_x_start + self.slider_width))
                     self.volume = (self.slider_x - self.slider_x_start) / self.slider_width
                     if self.sound_loaded:
-                        pygame.mixer.music.set_volume(self.volume)  # Обновляем громкость звука кнопок
+                        pygame.mixer.music.set_volume(self.volume)  # Оновлюємо гучність звуку кнопок
 
                 back_button.handle_event(event)
                 mute_button.handle_event(event)
