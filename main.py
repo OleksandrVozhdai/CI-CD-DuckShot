@@ -19,7 +19,7 @@ pygame.display.set_caption("Duck Hunt")
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-settings = Settings(WIDTH, HEIGHT)
+settings = Settings(WIDTH, HEIGHT, cap)
 
 #buttons init
 start_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/new_game_button.png","Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3")
@@ -77,7 +77,7 @@ def main_menu():
             #settings button
             # settings button
             if event.type == pygame.USEREVENT and event.button == settings_button:
-                settings.settings_menu(screen, font, cap, draw_text_with_outline, main_menu)
+                settings.settings_menu(screen, font, draw_text_with_outline, main_menu)
 
             #exit button
             if event.type == pygame.USEREVENT and event.button == exit_button:
