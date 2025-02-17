@@ -16,7 +16,7 @@ class Game:
         self.video_path = "Assets/Background/lvl1.mp4"
         self.cap = cv2.VideoCapture(self.video_path)
         self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
-
+        self.paused = False
         #bird sprite-sheet sett
         self.SpritePerRow= 5
         self.Rows = 4
@@ -81,13 +81,26 @@ class Game:
         self.running = True
         self.start_time = time.time()
 
-        #Game loop
         while self.running:
-            self.handle_events()
-            self.update_game_state()
-            self.draw_game_state()
+            self.handle_events()  # Обробка подій
+
+            if self.paused:  # Якщо гра на паузі, малюємо екран паузи та чекаємо
+                self.draw_pause_screen()
+                pygame.display.flip()
+                self.clock.tick(10)  # Зменшуємо FPS у режимі паузи
+                continue  # Пропускаємо оновлення гри
+
+            self.update_game_state()  # Оновлення стану гри
+            self.draw_game_state()  # Малювання кадру гри
             pygame.display.flip()
             self.clock.tick(self.level_timer)
+
+    def draw_pause_screen(self):
+        font = pygame.font.SysFont('Comic Sans MS', 72)
+        text = font.render("Paused", True, (255, 255, 255))
+        text_rect = text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 2))
+        self.screen.fill((0, 0, 0))  # Заливаємо екран чорним кольором
+        self.screen.blit(text, text_rect)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -95,12 +108,16 @@ class Game:
                 self.running = False
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                     pygame.quit()
                     sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.key == pygame.K_p:  # Натискання "P" перемикає паузу
+                    self.paused = not self.paused
+
+            if event.type == pygame.MOUSEBUTTONDOWN:  # Обробка кліку мишею
                 self.handle_mouse_click(pygame.mouse.get_pos())
 
     def handle_mouse_click(self, mouse_pos):

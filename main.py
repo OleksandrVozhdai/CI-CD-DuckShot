@@ -18,7 +18,7 @@ pygame.display.set_caption("Duck Hunt")
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-
+# Кнопки головного меню
 start_button = ImageButton(WIDTH / 2 - 126, 400, 252, 74, "",
                            "Assets/Buttons/new_game_button.png",
                            "Assets/Buttons/new_game_button_hover.png",
@@ -53,30 +53,9 @@ def fade_screen():
         pygame.display.flip()
         pygame.time.delay(20)
 
-paused = False
-
-def pause_menu():
-            global paused
-            while paused:
-                screen.fill((0, 0, 0))
-                draw_text_with_outline("Paused", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, HEIGHT / 2)
-                pygame.display.flip()
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                        paused = False
-
-
 def main_menu():
-    global paused
     running = True
     while running:
-        if paused:
-            pause_menu()
-
         ret, frame = cap.read()
         if not ret:
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -94,11 +73,10 @@ def main_menu():
                 running = False
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
-
-            if paused:
-                draw_text_with_outline("Paused", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, HEIGHT / 2)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.USEREVENT:
                 if event.button == start_button:
                     fade_screen()
@@ -124,11 +102,6 @@ def main_menu():
     pygame.quit()
 
 def select_level():
-    global paused
-    running = True
-    while running:
-        if paused:
-            pause_menu()
     level_buttons = []
     positions = [(WIDTH / 2 - 140, 400), (WIDTH / 2 - 35, 400), (WIDTH / 2 + 70, 400),
                  (WIDTH / 2 - 140, 500), (WIDTH / 2 - 35, 500), (WIDTH / 2 + 70, 500),
@@ -166,18 +139,16 @@ def select_level():
                 running = False
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
-
-            if paused:
-                draw_text_with_outline("Paused", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, HEIGHT / 2)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                fade_screen()
+                main_menu()
             if event.type == pygame.USEREVENT:
                 if event.button == back_button:
                     fade_screen()
                     main_menu()
 
-
-                if event.button == level_buttons[0]:
+                # Додаємо обробку кнопки першого рівня
+                if event.button == level_buttons[0]:  # Перевіряємо, чи натиснута кнопка першого рівня
                     fade_screen()
                     levelone = Game()
                     levelone.start_level()
@@ -195,11 +166,6 @@ def select_level():
     pygame.quit()
 
 def settings_menu():
-    global paused
-    running = True
-    while running:
-        if paused:
-            pause_menu()
     #buttons init
     audio_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/audio_button.png","Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3")
     video_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "","Assets/Buttons/video_button.png", "Assets/Buttons/video_button_hover.png","Assets/Sounds/click.mp3")
@@ -207,8 +173,6 @@ def settings_menu():
 
     running = True
     while running:
-        if paused:
-            draw_text_with_outline("Paused", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, HEIGHT / 2)
 
         # video bg will be swapped later
         ret, frame = cap.read()
@@ -231,10 +195,11 @@ def settings_menu():
                 sys.exit()
 
             #exit by ESC in menu
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    main_menu()
 
-                #back button to main menu
+            #back button to main menu
             if event.type == pygame.USEREVENT and event.button == back_button:
                 main_menu()
 
