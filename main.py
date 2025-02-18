@@ -18,7 +18,7 @@ pygame.display.set_caption("Duck Hunt")
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-# Кнопки головного меню
+
 start_button = ImageButton(WIDTH / 2 - 126, 400, 252, 74, "",
                            "Assets/Buttons/new_game_button.png",
                            "Assets/Buttons/new_game_button_hover.png",
@@ -147,8 +147,8 @@ def select_level():
                     fade_screen()
                     main_menu()
 
-                # Додаємо обробку кнопки першого рівня
-                if event.button == level_buttons[0]:  # Перевіряємо, чи натиснута кнопка першого рівня
+
+                if event.button == level_buttons[0]:
                     fade_screen()
                     levelone = Game()
                     levelone.start_level()

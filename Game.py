@@ -17,6 +17,8 @@ class Game:
         self.cap = cv2.VideoCapture(self.video_path)
         self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
         self.paused = False
+        self.pause_start_time = 0
+        self.total_paused_time = 0
         #bird sprite-sheet sett
         self.SpritePerRow= 5
         self.Rows = 4
@@ -82,16 +84,16 @@ class Game:
         self.start_time = time.time()
 
         while self.running:
-            self.handle_events()  # Обробка подій
+            self.handle_events()
 
-            if self.paused:  # Якщо гра на паузі, малюємо екран паузи та чекаємо
+            if self.paused:
                 self.draw_pause_screen()
                 pygame.display.flip()
-                self.clock.tick(10)  # Зменшуємо FPS у режимі паузи
-                continue  # Пропускаємо оновлення гри
+                self.clock.tick(10)
+                continue
 
-            self.update_game_state()  # Оновлення стану гри
-            self.draw_game_state()  # Малювання кадру гри
+            self.update_game_state()
+            self.draw_game_state()
             pygame.display.flip()
             self.clock.tick(self.level_timer)
 
@@ -99,7 +101,7 @@ class Game:
         font = pygame.font.SysFont('Comic Sans MS', 72)
         text = font.render("Paused", True, (255, 255, 255))
         text_rect = text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 2))
-        self.screen.fill((0, 0, 0))  # Заливаємо екран чорним кольором
+        self.screen.fill((0, 0, 0))
         self.screen.blit(text, text_rect)
 
     def handle_events(self):
@@ -114,10 +116,14 @@ class Game:
                     self.running = False
                     pygame.quit()
                     sys.exit()
-                elif event.key == pygame.K_p:  # Натискання "P" перемикає паузу
-                    self.paused = not self.paused
+                elif event.key == pygame.K_p:
+                    if not self.paused:
+                        self.pause_start_time = time.time()
+                    else:
+                        self.total_paused_time += time.time() - self.pause_start_time
 
-            if event.type == pygame.MOUSEBUTTONDOWN:  # Обробка кліку мишею
+                    self.paused = not self.paused
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 self.handle_mouse_click(pygame.mouse.get_pos())
 
     def handle_mouse_click(self, mouse_pos):
@@ -142,9 +148,12 @@ class Game:
             self.ammo -= 1
 
     def update_game_state(self):
-        #Update game duration
+        if self.paused:
+            return
+
         current_time = time.time()
-        elapsed_time = current_time - self.start_time
+        elapsed_time = current_time - self.start_time - self.total_paused_time
+
         if elapsed_time >= 40:
             self.running = False
             pygame.mouse.set_visible(True)
@@ -230,10 +239,12 @@ class Game:
             bird.draw(self.screen)
 
         # Draw HUD
+        elapsed_time = time.time() - (self.start_time + self.total_paused_time)
+        timer_text = self.my_font.render("Time: " + str(max(0, int(self.level_timer - elapsed_time))), False, (0, 0, 0))
+
         padding = self.WIDTH * 0.007
         score_text = self.my_font.render("Score: " + str(self.score), False, (0, 0, 0))
-        timer_text = self.my_font.render("Time: " + str(int(self.level_timer - (time.time() - self.start_time))), False,
-                                         (0, 0, 0))
+
 
         self.screen.blit(score_text, (10, 10))
         self.screen.blit(timer_text, (10, 10 + score_text.get_height() + padding))
