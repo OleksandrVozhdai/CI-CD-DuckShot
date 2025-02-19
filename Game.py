@@ -82,6 +82,8 @@ class Game:
         pygame.mouse.set_visible(False)
         self.running = True
         self.start_time = time.time()
+        self.total_shots = 0
+        self.total_hits = 0
 
         while self.running:
             self.handle_events()
@@ -96,6 +98,29 @@ class Game:
             self.draw_game_state()
             pygame.display.flip()
             self.clock.tick(self.level_timer)
+
+        self.show_statistics()
+
+    def show_statistics(self):
+        self.screen.fill((0, 0, 0))
+        accuracy = (self.total_hits / self.total_shots * 100) if self.total_shots > 0 else 0
+
+        stats_text = [
+            f"Total Shots: {self.total_shots}",
+            f"Hits: {self.total_hits}",
+            f"Hit Accuracy: {accuracy:.2f}%",
+            f"Birds Shot Down: {len(self.death_times)}"
+        ]
+
+        y_offset = self.HEIGHT // 3
+        for text in stats_text:
+            rendered_text = self.my_font.render(text, True, (255, 255, 255))
+            text_rect = rendered_text.get_rect(center=(self.WIDTH // 2, y_offset))
+            self.screen.blit(rendered_text, text_rect)
+            y_offset += 50
+
+        pygame.display.flip()
+        pygame.time.wait(5000)
 
     def draw_pause_screen(self):
         font = pygame.font.SysFont('Comic Sans MS', 72)
@@ -127,25 +152,25 @@ class Game:
                 self.handle_mouse_click(pygame.mouse.get_pos())
 
     def handle_mouse_click(self, mouse_pos):
-       if self.ammo > 0:
-        current_time = pygame.time.get_ticks()
-
-        if current_time - self.last_shot_time >= self.shootDelay:
-            for bird in self.birds:
-                if bird.check_collision(mouse_pos):
-                    self.blink_time = pygame.time.get_ticks()
-                    bird.hp -= 1
-                    bird.birdSpeed += 2
-                    bird.frame_delay -= 2
-                    if bird.hp <= 0:
-                        bird.kill()
-                        self.birdLevelCount += 1
-                        self.death_times[bird] = pygame.time.get_ticks()
-                        self.score += bird.value
-                    break
-
-            self.last_shot_time = current_time
-            self.ammo -= 1
+        if self.ammo > 0:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_shot_time >= self.shootDelay:
+                self.total_shots += 1
+                for bird in self.birds:
+                    if bird.check_collision(mouse_pos):
+                        self.blink_time = pygame.time.get_ticks()
+                        bird.hp -= 1
+                        bird.birdSpeed += 2
+                        bird.frame_delay -= 2
+                        if bird.hp <= 0:
+                            bird.kill()
+                            self.birdLevelCount += 1
+                            self.death_times[bird.id] = pygame.time.get_ticks()
+                            self.score += bird.value
+                            self.total_hits += 1
+                        break
+                self.last_shot_time = current_time
+                self.ammo -= 1
 
     def update_game_state(self):
         if self.paused:
@@ -238,24 +263,39 @@ class Game:
         for bird in self.birds:
             bird.draw(self.screen)
 
-        # Draw HUD
+        # Draw HUD background (semi-transparent black rectangle)
+        hud_height = self.HEIGHT // 10
+        hud_surface = pygame.Surface((self.WIDTH, hud_height), pygame.SRCALPHA)
+        hud_surface.fill((0, 0, 0, 150))  # Black with 150 alpha (semi-transparent)
+        self.screen.blit(hud_surface, (0, self.HEIGHT - hud_height))
+
+        # Draw HUD elements (centered)
         elapsed_time = time.time() - (self.start_time + self.total_paused_time)
-        timer_text = self.my_font.render("Time: " + str(max(0, int(self.level_timer - elapsed_time))), False, (0, 0, 0))
+        timer_text = self.my_font.render(f"Time: {max(0, int(self.level_timer - elapsed_time))}", False, (255, 255, 255))
+        score_text = self.my_font.render(f"Score: {self.score}", False, (255, 255, 255))
 
-        padding = self.WIDTH * 0.007
-        score_text = self.my_font.render("Score: " + str(self.score), False, (0, 0, 0))
+        text_y = self.HEIGHT - hud_height // 2 - timer_text.get_height() // 2
+        total_text_width = timer_text.get_width() + 50 + score_text.get_width()
+        text_x = (self.WIDTH - total_text_width) // 2
 
+        self.screen.blit(timer_text, (text_x, text_y))
+        self.screen.blit(score_text, (text_x + timer_text.get_width() + 50, text_y))
+        # Draw HUD controls text
+        # Draw HUD controls text
+        controls_text = self.my_font.render("ESC - close game   P - pause", False, (255, 255, 255))
+        controls_x = 10
+        controls_y = self.HEIGHT - hud_height + 10
 
-        self.screen.blit(score_text, (10, 10))
-        self.screen.blit(timer_text, (10, 10 + score_text.get_height() + padding))
+        self.screen.blit(controls_text, (controls_x, controls_y))
 
-        # Draw Ammo
+        # Draw Ammo icons
         ammo = pygame.image.load('Assets/Hud/ammo.png')
         ammo = pygame.transform.scale(ammo, (self.WIDTH // 128, self.HEIGHT // 27))
+        ammo_x_start = (self.WIDTH // 2) - ((self.ammo * (self.WIDTH * 0.012)) // 2)
+        ammo_y = self.HEIGHT - hud_height // 2 + timer_text.get_height() // 2
 
-        ammo_y = 10 + score_text.get_height() + timer_text.get_height() + 2 * padding
         for i in range(self.ammo):
-            self.screen.blit(ammo, (10 + i * (self.WIDTH * 0.012), ammo_y))
+            self.screen.blit(ammo, (ammo_x_start + i * (self.WIDTH * 0.012), ammo_y))
 
         # Blink effect
         if pygame.time.get_ticks() - self.blink_time < self.blink_duration:

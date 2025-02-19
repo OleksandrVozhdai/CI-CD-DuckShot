@@ -3,6 +3,7 @@ import random
 import time
 
 class Bird:
+    bird_counter = 0
     def __init__(self, value, x, y, speed, hp, DirectionTimeChange, right, left, up, down, sprite_sheet, SpritePerRow, SpriteWidth, SpriteHeight):
         self.value = value
         self.x = x
@@ -27,6 +28,8 @@ class Bird:
         self.gravity = 2
         self.alive = True
         self.DirectionTimeChange = DirectionTimeChange
+        self.id = Bird.bird_counter
+        Bird.bird_counter += 1
 
     def check_collision(self, mouse_pos):
         if self.alive:
