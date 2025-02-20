@@ -19,6 +19,8 @@ class Game:
         self.paused = False
         self.pause_start_time = 0
         self.total_paused_time = 0
+        self.exit_to_menu = False
+        self.show_controls = False
         #bird sprite-sheet sett
         self.SpritePerRow= 5
         self.Rows = 4
@@ -87,6 +89,8 @@ class Game:
 
         while self.running:
             self.handle_events()
+            if self.exit_to_menu:
+                return
 
             if self.paused:
                 self.draw_pause_screen()
@@ -137,17 +141,26 @@ class Game:
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_h:
+                    self.show_controls = not self.show_controls
+
+                elif event.key == pygame.K_ESCAPE:
                     self.running = False
                     pygame.quit()
                     sys.exit()
+
                 elif event.key == pygame.K_p:
                     if not self.paused:
                         self.pause_start_time = time.time()
                     else:
                         self.total_paused_time += time.time() - self.pause_start_time
-
                     self.paused = not self.paused
+
+                elif event.key == pygame.K_m:
+                    pygame.mouse.set_visible(True)
+                    self.running = False
+                    self.exit_to_menu = True
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.handle_mouse_click(pygame.mouse.get_pos())
 
@@ -282,7 +295,7 @@ class Game:
         self.screen.blit(score_text, (text_x + timer_text.get_width() + 50, text_y))
         # Draw HUD controls text
         # Draw HUD controls text
-        controls_text = self.my_font.render("ESC - close game   P - pause", False, (255, 255, 255))
+        controls_text = self.my_font.render("H - Help", False, (255, 255, 255))
         controls_x = 10
         controls_y = self.HEIGHT - hud_height + 10
 
@@ -307,3 +320,19 @@ class Game:
         scope = pygame.transform.scale(scope, (self.WIDTH // 27.4, self.HEIGHT // 15.4))
         scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
         self.screen.blit(scope, scope_rect)
+        # Draw control hints if H is pressed
+
+        if self.show_controls:
+            controls_hint = [
+                "ESC - Close game",
+                "P - Pause",
+                "M - Main Menu",
+            ]
+
+            hint_x = 10
+            hint_y = 10
+
+            for i, text in enumerate(controls_hint):
+                hint_text = self.my_font.render(text, False, (0, 0, 0))
+                self.screen.blit(hint_text, (hint_x, hint_y + i * 30))
+
