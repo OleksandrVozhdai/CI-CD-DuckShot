@@ -197,10 +197,12 @@ def settings_menu():
             #exit by ESC in menu
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    fade_screen()
                     main_menu()
 
             #back button to main menu
             if event.type == pygame.USEREVENT and event.button == back_button:
+                fade_screen()
                 main_menu()
 
             #click handler

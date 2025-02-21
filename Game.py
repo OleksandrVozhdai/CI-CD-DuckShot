@@ -294,7 +294,6 @@ class Game:
         self.screen.blit(timer_text, (text_x, text_y))
         self.screen.blit(score_text, (text_x + timer_text.get_width() + 50, text_y))
         # Draw HUD controls text
-        # Draw HUD controls text
         controls_text = self.my_font.render("H - Help", False, (255, 255, 255))
         controls_x = 10
         controls_y = self.HEIGHT - hud_height + 10
@@ -335,4 +334,3 @@ class Game:
             for i, text in enumerate(controls_hint):
                 hint_text = self.my_font.render(text, False, (0, 0, 0))
                 self.screen.blit(hint_text, (hint_x, hint_y + i * 30))
-
