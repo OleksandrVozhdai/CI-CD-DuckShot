@@ -1,4 +1,5 @@
 import os
+import json
 import pygame
 import cv2
 from Button import ImageButton
@@ -8,7 +9,9 @@ pygame.mixer.init()
 
 class Settings:
     def __init__(self, width, height, cap):
-        self.volume = 0.5
+        self.SETTINGS_FILE = "settings.json"  # Файл для збереження налаштувань
+
+        self.volume = 0.5  # Значення гучності за замовчуванням
         self.crosshair_size = 20
         self.difficulty = "Medium"
         self.brightness = 0.8
@@ -18,36 +21,73 @@ class Settings:
         self.cap = cap
         self.sound_enabled = True
 
-        # Вкорочуємо смужку гучності та коригуємо повзунок
-        self.slider_width = self.width // 3  # Нова ширина смужки (коротша)
-        self.slider_x_start = (self.width - self.slider_width) // 2  # Центрування смужки
+        # Зменшуємо довжину полоски гучності та коригуємо положення повзунка
+        self.slider_width = self.width // 3  # Нова ширина полоски (коротша)
+        self.slider_x_start = (self.width - self.slider_width) // 2  # Центруємо полоску
         self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
         self.slider_dragging = False
 
-        # Завантажуємо MP3 замість WAV
+        # Завантажуємо налаштування гучності з файлу
+        self.load_settings()
+
+        # **Оновлення положення повзунка після завантаження гучності**
+        self.update_slider_position()
+
+        # Завантажуємо звук кнопок
         self.sound_path = "Assets/Sounds/click.mp3"
         self.sound_loaded = os.path.exists(self.sound_path)
         if self.sound_loaded:
             pygame.mixer.music.load(self.sound_path)
-            pygame.mixer.music.set_volume(self.volume)  # Встановлюємо гучність
+            pygame.mixer.music.set_volume(self.volume)  # Встановлюємо поточну гучність
         else:
             print(f"⚠️ Файл {self.sound_path} не знайдено! Звук кнопок вимкнено.")
 
-    def get_volume(self):
-        """Повертає поточну гучність для використання в інших частинах гри."""
-        return self.volume
+    def save_settings(self):
+        """Зберігає поточні налаштування гучності у файл"""
+        try:
+            with open(self.SETTINGS_FILE, "w") as file:
+                json.dump({"volume": self.volume}, file)
+            print(f"✅ Налаштування збережено у {self.SETTINGS_FILE}")
+        except Exception as e:
+            print(f"❌ Помилка збереження налаштувань: {e}")
+
+    def load_settings(self):
+        """Завантажує налаштування з файлу, якщо він існує. Якщо ні – створює новий файл"""
+        if os.path.exists(self.SETTINGS_FILE):
+            try:
+                with open(self.SETTINGS_FILE, "r") as file:
+                    data = json.load(file)
+                    self.volume = data.get("volume", 0.5)  # Якщо файлу немає, використовуємо 50%
+                    print(f"🔄 Завантажено гучність: {self.volume * 100}%")
+            except json.JSONDecodeError:
+                print("⚠️ Помилка завантаження налаштувань! Використовуються значення за замовчуванням.")
+        else:
+            print("⚠️ Файл налаштувань відсутній. Створюємо новий...")
+            self.save_settings()  # Якщо файл відсутній, створюємо його
+
+    def update_slider_position(self):
+        """Оновлює положення повзунка відповідно до поточної гучності"""
+        self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
 
     def increase_volume(self):
+        """Збільшує гучність, зберігає зміни та оновлює звук"""
         self.volume = min(1.0, self.volume + 0.1)
-        self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
+        self.update_slider_position()
+        self.save_settings()  # Зберігаємо зміни
         if self.sound_loaded:
-            pygame.mixer.music.set_volume(self.volume)  # Оновлюємо гучність кнопок
+            pygame.mixer.music.set_volume(self.volume)
 
     def decrease_volume(self):
+        """Зменшує гучність, зберігає зміни та оновлює звук"""
         self.volume = max(0.0, self.volume - 0.1)
-        self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
+        self.update_slider_position()
+        self.save_settings()  # Зберігаємо зміни
         if self.sound_loaded:
-            pygame.mixer.music.set_volume(self.volume)  # Оновлюємо гучність кнопок
+            pygame.mixer.music.set_volume(self.volume)
+
+    def get_volume(self):
+        """Повертає поточний рівень гучності"""
+        return self.volume
 
     def toggle_fullscreen(self):
         self.fullscreen = not self.fullscreen
@@ -111,6 +151,9 @@ class Settings:
                                   "Assets/Buttons/back_button_hover.png", "")
         mute_button = ImageButton(self.width / 2 - (252 / 2), 500, 252, 74, "", "Assets/Buttons/mute_button.png",
                                   "Assets/Buttons/mute_button_hover.png", "")
+        save_button = ImageButton(self.width / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/save_button.png",
+                                  "Assets/Buttons/save_button_hover.png", "")  # КНОПКА "SAVE"
+
         running = True
 
         while running:
@@ -134,7 +177,7 @@ class Settings:
             pygame.draw.circle(screen, (255, 255, 255), (self.slider_x, 274), 10)
 
             draw_text_with_outline(f"Volume: {int(self.volume * 100)}%", font, (255, 255, 255), (0, 0, 0),
-                                   self.width / 2, 350)
+                                   self.width / 2, 330)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -170,6 +213,9 @@ class Settings:
                             pygame.mixer.music.play()
                         running = False
                         return
+                    elif save_button.rect.collidepoint(event.pos):  # КНОПКА СОХРАНИТЬ
+                        self.save_settings()
+                        print("✅ Настройки сохранены!")  # Сообщение в консоли
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     self.slider_dragging = False
@@ -182,10 +228,13 @@ class Settings:
 
                 back_button.handle_event(event)
                 mute_button.handle_event(event)
+                save_button.handle_event(event)  # ОБРАБОТКА СОХРАНЕНИЯ
 
             back_button.check_hover(pygame.mouse.get_pos())
             back_button.draw(screen)
             mute_button.check_hover(pygame.mouse.get_pos())
             mute_button.draw(screen)
+            save_button.check_hover(pygame.mouse.get_pos())  # ПРОВЕРКА НАВЕДЕНИЯ
+            save_button.draw(screen)  # РИСУЕМ КНОПКУ
 
             pygame.display.flip()
