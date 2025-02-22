@@ -106,7 +106,7 @@ class Settings:
         return self.volume
 
     def settings_menu(self, screen, font, draw_text_with_outline, main_menu):
-        # Ініціалізація кнопок для меню налаштувань, центрування відносно поточного розширення
+        # Ініціалізація кнопок для меню налаштувань, центрирование относительно текущего разрешения
         audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
                                    "Assets/Buttons/audio_button_hover.png", "")
         video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
@@ -122,13 +122,13 @@ class Settings:
                     if not ret:
                         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                         continue
-                    # Масштабуємо відео під поточне розширення
+                    # Масштабируем видео под текущее разрешение
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
                     frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
-                print(f"Помилка при обробці відео: {e}")
+                print(f"Ошибка при обработке видео: {e}")
                 screen.fill((0, 0, 0))
 
             draw_text_with_outline("Settings", font, (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.2)

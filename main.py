@@ -9,17 +9,18 @@ pygame.init()
 pygame.font.init()
 info = pygame.display.Info()
 
-# Спочатку ініціалізуємо cap, щоб він був доступний
+# Initialize cap first so it is available
 video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-# Обмежимо частоту кадрів відео для оптимізації
-cap.set(cv2.CAP_PROP_FPS, 30)  # Встановимо 30 FPS для стабільності
+# Limit video frame rate for optimization
+cap.set(cv2.CAP_PROP_FPS, 60)  # Set 30 FPS for stability
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 1000)   # Increase buffer for fast frame reading
 
-# Тепер ініціалізуємо settings з cap
-settings = Settings(info.current_w, info.current_h, cap)  # Ініціалізуємо налаштування з поточною роздільною здатністю монітора
+# Now initialize settings with cap
+settings = Settings(info.current_w, info.current_h, cap)  # Initialize settings with current screen resolution
 
-# Ініціалізуємо екран залежно від повноекранного режиму
+# Initialize screen depending on fullscreen mode for the main menu
 if settings.fullscreen:
     screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
 else:
@@ -30,7 +31,7 @@ font = pygame.font.SysFont('Comic Sans MS', 72)
 
 pygame.display.set_caption("Duck Hunt")
 
-# Ініціалізація кнопок з урахуванням поточної роздільної здатності
+# Initialize buttons with current resolution
 start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "", "Assets/Buttons/new_game_button.png",
                           "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
 settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "", "Assets/Buttons/settings_button.png",
@@ -51,37 +52,53 @@ def draw_text_with_outline(text, font, text_color, outline_color, x, y, surface)
 
     surface.blit(text_surface, text_rect)
 
+def fade_screen():
+    fade_surface = pygame.Surface((settings.width, settings.height))
+    fade_surface.fill((0, 0, 0))
+    for alpha in range(0, 256, 10):
+        fade_surface.set_alpha(alpha)
+        screen.blit(fade_surface, (0, 0))
+        pygame.display.flip()
+        pygame.time.delay(10)
+
 def main_menu():
     global screen, cap, start_button, settings_button, exit_button
     running = True
-    clock = pygame.time.Clock()  # Додаємо Clock для керування FPS
-    last_frame = None  # Буфер для останнього кадру відео
+    clock = pygame.time.Clock()  # Add Clock for FPS management
+    last_frame = None # Buffer for the last video frame
 
     while running:
         try:
-            ret, frame = cap.read()
-            if not ret:
-                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                continue
-            # Масштабуємо відео під поточну роздільну здатність з оптимізацією
+            # Retry reading frame until successful (max 5 attempts)
+            ret, frame = None, None
+            attempts = 5
+            while attempts > 0 and (not ret or frame is None):
+                ret, frame = cap.read()
+                if not ret:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                attempts -= 1
+                if attempts == 0 and not ret:
+                    raise Exception("Video download error")
+            # Scale video to current resolution with optimization
             info = pygame.display.Info()
             max_width, max_height = min(settings.width, info.current_w), min(settings.height, info.current_h)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.resize(frame, (max_width, max_height), interpolation=cv2.INTER_LINEAR)
             frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-            last_frame = frame_surface  # Зберігаємо останній кадр
+            last_frame = frame_surface  # Save last frame
             screen.blit(frame_surface, (0, 0))
         except Exception as e:
-            print(f"Помилка при обробці відео в головному меню: {e}")
+            print(f"ОVideo download error (Menu): {e}")
             if last_frame:
-                screen.blit(last_frame, (0, 0))  # Використовуємо останній вдалий кадр, якщо помилка
+                screen.blit(last_frame, (0, 0)) # Use last successful frame if error
             else:
-                screen.fill((0, 0, 0))  # Чорний екран тільки якщо немає буфера
+                screen.fill((0, 0, 0))  # Black screen only if no buffer available
 
         draw_text_with_outline("Duck Hunt", font, (255, 255, 255), (0, 0, 0), settings.width / 2, settings.height * 0.2, screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fade_screen()
                 running = False
                 break
             if event.type == pygame.KEYDOWN:
@@ -90,13 +107,15 @@ def main_menu():
                     break
             if event.type == pygame.USEREVENT:
                 if event.button == start_button:
-                    # Відновлюємо виклик меню вибору рівнів
+                    fade_screen()
+                    # restore menu
                     select_level()
                 elif event.button == settings_button:
+                    fade_screen()
                     screen = settings.settings_menu(screen, font, lambda text, f, tc, oc, x, y: draw_text_with_outline(text, f, tc, oc, x, y, screen), main_menu)
                     if screen:
                         settings.width, settings.height = screen.get_width(), screen.get_height()
-                        # Позиціонуємо кнопки пропорційно новому розміру
+
                         start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "", "Assets/Buttons/new_game_button.png",
                                                   "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
                         settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "", "Assets/Buttons/settings_button.png",
@@ -104,6 +123,7 @@ def main_menu():
                         exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
                                                  "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
                 elif event.button == exit_button:
+                    fade_screen()
                     running = False
                     break
 
@@ -115,7 +135,7 @@ def main_menu():
             btn.draw(screen)
 
         pygame.display.flip()
-        clock.tick(60)  # Встановлюємо 60 FPS для плавного рендерингу
+        clock.tick(60)  #60 fps
 
     cap.release()
     pygame.quit()
@@ -124,14 +144,19 @@ def main_menu():
 def select_level():
     global screen, cap, settings
     running = True
-    clock = pygame.time.Clock()  # Додаємо Clock для керування FPS
-    last_frame = None  # Буфер для останнього кадру відео
+    clock = pygame.time.Clock()  #for fps control
+    last_frame = None  # last video frame
 
-    # Перестворюємо кнопки з урахуванням поточної роздільної здатності та центруємо по горизонталі
+    if screen is None:
+        if settings.fullscreen:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+
     button_width = 80
     button_spacing = 10
-    total_buttons_width = 3 * button_width + 2 * button_spacing  # 3 кнопки в рядку з проміжками
-    start_x = (settings.width - total_buttons_width) / 2  # Центр рядка кнопок
+    total_buttons_width = 3 * button_width + 2 * button_spacing
+    start_x = (settings.width - total_buttons_width) / 2
 
     Lbutton1 = ImageButton(start_x, settings.height * 0.35, button_width, 74, "", "Assets/Buttons/level_but_1.png",
                            "Assets/Buttons/level_but_hover_1.png", "Assets/Sounds/click.mp3", settings)
@@ -156,29 +181,35 @@ def select_level():
 
     while running:
         try:
-            ret, frame = cap.read()
-            if not ret:
-                cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                continue
-            # Масштабуємо відео під поточну роздільну здатність з оптимізацією
+            ret, frame = None, None
+            attempts = 5
+            while attempts > 0 and (not ret or frame is None):
+                ret, frame = cap.read()
+                if not ret:
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                attempts -= 1
+                if attempts == 0 and not ret:
+                    raise Exception("video error")
+
             info = pygame.display.Info()
             max_width, max_height = min(settings.width, info.current_w), min(settings.height, info.current_h)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.resize(frame, (max_width, max_height), interpolation=cv2.INTER_LINEAR)
             frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-            last_frame = frame_surface  # Зберігаємо останній кадр
+            last_frame = frame_surface
             screen.blit(frame_surface, (0, 0))
         except Exception as e:
-            print(f"Помилка при обробці відео у виборі рівня: {e}")
+            print(f"video error (Menu): {e}")
             if last_frame:
-                screen.blit(last_frame, (0, 0))  # Використовуємо останній вдалий кадр, якщо помилка
+                screen.blit(last_frame, (0, 0))
             else:
-                screen.fill((0, 0, 0))  # Чорний екран тільки якщо немає буфера
+                screen.fill((0, 0, 0))  #if no background
 
         draw_text_with_outline("Select level", font, (255, 255, 255), (0, 0, 0), settings.width / 2, settings.height * 0.2, screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                fade_screen()
                 running = False
                 cap.release()
                 pygame.quit()
@@ -188,19 +219,38 @@ def select_level():
                     running = False
                     break
             if event.type == pygame.USEREVENT:
+                fade_screen()
                 if event.button == Lbutton1:
-                    # Створюємо об'єкт Game, використовуючи існуючий screen та cap
-                    game = Game(screen=screen, cap=cap)
-                    game.start_level()
-                    # Відновлюємо екран з плавним переходом, використовуючи останній кадр
-                    if last_frame:
-                        screen.blit(last_frame, (0, 0))  # Негайно відображаємо останній кадр
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame)
+                    game_last_frame = game.start_level()
+                    if game_last_frame:
+                        if settings.fullscreen:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+                        else:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+                        screen.blit(game_last_frame, (0, 0))
                         pygame.display.flip()
+                    elif last_frame:
+                        if settings.fullscreen:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+                        else:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+                        screen.blit(last_frame, (0, 0))
+                        pygame.display.flip()
+
+
+                #Here add new levels
+
                 elif event.button == back_button:
+                    fade_screen()
                     running = False
-                    # Плавне відновлення екрана з використанням останнього кадру
+
                     if last_frame:
-                        screen.blit(last_frame, (0, 0))  # Негайно відображаємо останній кадр
+                        if settings.fullscreen:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+                        else:
+                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+                        screen.blit(last_frame, (0, 0))
                         pygame.display.flip()
                     break
 
@@ -212,7 +262,7 @@ def select_level():
             btn.draw(screen)
 
         pygame.display.flip()
-        clock.tick(60)  # Встановлюємо 60 FPS для плавного рендерингу
+        clock.tick(60)  #60 fps
 
 def main():
     main_menu()
