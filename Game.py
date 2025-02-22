@@ -112,7 +112,7 @@ class Game:
             self.update_game_state()
             self.draw_game_state()
             pygame.display.flip()
-            clock.tick(60)  # Встановлюємо 60 FPS для плавного рендерингу
+            self.clock.tick(60)  # Встановлюємо 60 FPS для плавного рендерингу
 
         self.show_statistics()
 
