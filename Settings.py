@@ -106,7 +106,7 @@ class Settings:
         return self.volume
 
     def settings_menu(self, screen, font, draw_text_with_outline, main_menu):
-        # Ініціалізація кнопок для меню налаштувань, центрирование относительно текущего разрешения
+        # Ініціалізація кнопок для меню налаштувань, центрування відносно поточного розширення
         audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
                                    "Assets/Buttons/audio_button_hover.png", "")
         video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
@@ -122,13 +122,13 @@ class Settings:
                     if not ret:
                         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                         continue
-                    # Масштабируем видео под текущее разрешение
+                    # Масштабуємо відео під поточне розширення
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
                     frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
-                print(f"Ошибка при обработке видео: {e}")
+                print(f"Помилка при обробці відео: {e}")
                 screen.fill((0, 0, 0))
 
             draw_text_with_outline("Settings", font, (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.2)
@@ -147,10 +147,10 @@ class Settings:
                         if self.sound_loaded:
                             pygame.mixer.music.play()
                         screen = self.audio_settings(screen, font, draw_text_with_outline, main_menu)
-                        # Обновляем размер экрана после возврата из подменю
+                        # Оновлюємо розмір екрана після повернення з підменю
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            # Переинициализируем кнопки с учетом нового разрешения
+                            # Переініціалізуємо кнопки з урахуванням нового розширення
                             audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
                                                        "Assets/Buttons/audio_button_hover.png", "")
                             video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
@@ -163,7 +163,7 @@ class Settings:
                         screen = self.video_settings(screen, font, draw_text_with_outline, main_menu)
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            # Переинициализируем кнопки с учетом нового разрешения
+                            # Переініціалізуємо кнопки з урахуванням нового розширення
                             audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
                                                        "Assets/Buttons/audio_button_hover.png", "")
                             video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
@@ -182,7 +182,7 @@ class Settings:
                         if self.sound_loaded:
                             pygame.mixer.music.play()
 
-            # Центрируем кнопки по ширине и масштабируем по высоте
+            # Центруємо кнопки по ширині та масштабуємо по висоті
             audio_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.35)
             video_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.45)
             back_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.55)
@@ -196,7 +196,7 @@ class Settings:
         return screen
 
     def audio_settings(self, screen, font, draw_text_with_outline, main_menu):
-        # Оставляем порядок кнопок: Mute, Save, Back
+        # Залишаємо порядок кнопок: Mute, Save, Back
         mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/mute_button.png",
                                   "Assets/Buttons/mute_button_hover.png", "")
         save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/save_button.png",
@@ -216,22 +216,22 @@ class Settings:
                     if not ret:
                         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                         continue
-                    # Масштабируем видео под текущее разрешение
+                    # Масштабуємо відео під поточне розширення
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
                     frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
-                print(f"Ошибка при обработке видео: {e}")
+                print(f"Помилка при обробці відео: {e}")
                 screen.fill((0, 0, 0))
 
-            # Устанавливаем новые позиции для 10% от верха и 10% от кнопок
+            # Встановлюємо нові позиції для 10% від верху і 10% від кнопок
             draw_text_with_outline("Audio Settings", font, (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.1)
-            pygame.draw.rect(screen, (255, 255, 255), (self.slider_x_start, self.height * 0.15, self.slider_width, 8))  # Подняли ползунок выше
+            pygame.draw.rect(screen, (255, 255, 255), (self.slider_x_start, self.height * 0.15, self.slider_width, 8))  # Підняли повзунок вище
             pygame.draw.rect(screen, (0, 255, 0), (self.slider_x_start, self.height * 0.15, int(self.volume * self.slider_width), 8))
             pygame.draw.circle(screen, (255, 255, 255), (self.slider_x, int(self.height * 0.15 + 4)), 10)
             draw_text_with_outline(f"Volume: {int(self.volume * 100)}%", font, (255, 255, 255), (0, 0, 0),
-                                   self.width / 2, self.height * 0.2)  # Подняли текст выше
+                                   self.width / 2, self.height * 0.2)  # Підняли текст вище
             if self.settings_saved and not settings_changed:
                 draw_text_with_outline("Налаштування збережено!", font, (0, 255, 0), (0, 0, 0), self.width / 2, self.height * 0.7)
             elif settings_changed:
@@ -262,7 +262,7 @@ class Settings:
                             self.settings_saved = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if abs(event.pos[0] - self.slider_x) <= 10 and (self.height * 0.15 - 4) <= event.pos[1] <= (self.height * 0.15 + 12):  # Обновили высоту для ползунка
+                    if abs(event.pos[0] - self.slider_x) <= 10 and (self.height * 0.15 - 4) <= event.pos[1] <= (self.height * 0.15 + 12):  # Оновили висоту для повзунка
                         self.slider_dragging = True
                     elif mute_button.rect.collidepoint(event.pos):
                         if self.volume > 0.0:
@@ -305,13 +305,13 @@ class Settings:
                     self.settings_saved = False
 
                 if event.type == pygame.VIDEORESIZE:
-                    if not self.fullscreen:  # Разрешить изменение размера только в оконном режиме
+                    if not self.fullscreen:  # Дозволити зміну розміру тільки в віконному режимі
                         self.width, self.height = event.w, event.h
                         self.slider_width = self.width // 3
                         self.slider_x_start = (self.width - self.slider_width) // 2
                         self.update_slider_position()
                         screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-                        # Переинициализация кнопок после изменения размера
+                        # Переініціалізація кнопок після зміни розміру
                         mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/mute_button.png",
                                                   "Assets/Buttons/mute_button_hover.png", "")
                         save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/save_button.png",
@@ -335,17 +335,17 @@ class Settings:
         return screen
 
     def video_settings(self, screen, font, draw_text_with_outline, main_menu):
-        """Налаштування відео: изменение порядка кнопок и корректное масштабирование с кнопкой "Сохранить" """
+        """Налаштування відео: зміна порядку кнопок і коректне масштабування з кнопкою "Зберегти" """
         fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                         "Assets/Buttons/fullscreen_button.png",
-                                        "Assets/Buttons/fullscreen_button_hover.png", "")  # Первая кнопка - Fullscreen
+                                        "Assets/Buttons/fullscreen_button_hover.png", "")  # Перша кнопка - Fullscreen
         resolution_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
                                         "Assets/Buttons/resolution_button.png",
-                                        "Assets/Buttons/resolution_button_hover.png", "")  # Вторая кнопка - Resolution
+                                        "Assets/Buttons/resolution_button_hover.png", "")  # Друга кнопка - Resolution
         save_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/save_button.png",
-                                  "Assets/Buttons/save_button_hover.png", "")  # Третья кнопка - Save
+                                  "Assets/Buttons/save_button_hover.png", "")  # Третя кнопка - Save
         back_button = ImageButton((self.width - 252) / 2, self.height * 0.65, 252, 74, "", "Assets/Buttons/back_button.png",
-                                  "Assets/Buttons/back_button_hover.png", "")  # Четвертая кнопка - Back
+                                  "Assets/Buttons/back_button_hover.png", "")  # Четверта кнопка - Back
 
         running = True
         while running:
@@ -355,16 +355,16 @@ class Settings:
                     if not ret:
                         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                         continue
-                    # Масштабируем видео под текущее разрешение
+                    # Масштабуємо відео під поточне розширення
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame = cv2.resize(frame, (self.width, self.height), interpolation=cv2.INTER_AREA)
                     frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
-                print(f"Ошибка при обработке видео: {e}")
+                print(f"Помилка при обробці відео: {e}")
                 screen.fill((0, 0, 0))
 
-            # Выравниваем текст с одинаковым шрифтом и позицией
+            # Вирівнюємо текст з однаковим шрифтом і позицією
             draw_text_with_outline("Video Settings", font, (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.1)
             draw_text_with_outline(f"Resolution: {self.width}x{self.height}", font, (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.2)
             fullscreen_text = "Fullscreen: ON" if self.fullscreen else "Fullscreen: OFF"
@@ -379,11 +379,11 @@ class Settings:
                     if event.key == pygame.K_ESCAPE:
                         running = False
                         return screen
-                    elif event.key == pygame.K_F11:  # Горячая клавиша для переключения в полноэкранный режим
+                    elif event.key == pygame.K_F11:  # Гаряча клавіша для переключення в повноекранний режим
                         screen = self.toggle_fullscreen(screen)
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            # Переинициализация кнопок после изменения режима
+                            # Переініціалізація кнопок після зміни режиму
                             fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                                             "Assets/Buttons/fullscreen_button.png",
                                                             "Assets/Buttons/fullscreen_button_hover.png", "")
@@ -397,13 +397,13 @@ class Settings:
                                                       "Assets/Buttons/back_button.png",
                                                       "Assets/Buttons/back_button_hover.png", "")
                 if event.type == pygame.VIDEORESIZE:
-                    if not self.fullscreen:  # Разрешить изменение размера только в оконном режиме
+                    if not self.fullscreen:  # Дозволити зміну розміру тільки в віконному режимі
                         self.width, self.height = event.w, event.h
                         self.slider_width = self.width // 3
                         self.slider_x_start = (self.width - self.slider_width) // 2
                         self.update_slider_position()
                         screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-                        # Переинициализация кнопок после изменения размера
+                        # Переініціалізація кнопок після зміни розміру
                         fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                                         "Assets/Buttons/fullscreen_button.png",
                                                         "Assets/Buttons/fullscreen_button_hover.png", "")
@@ -417,11 +417,11 @@ class Settings:
                                                   "Assets/Buttons/back_button.png",
                                                   "Assets/Buttons/back_button_hover.png", "")
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if resolution_button.rect.collidepoint(event.pos):  # Разрешение можно менять в обоих режимах
+                    if resolution_button.rect.collidepoint(event.pos):  # Розширення можна змінювати в обох режимах
                         screen = self.change_resolution(screen)
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            # Переинициализация кнопок после изменения разрешения
+                            # Переініціалізація кнопок після зміни розширення
                             fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                                             "Assets/Buttons/fullscreen_button.png",
                                                             "Assets/Buttons/fullscreen_button_hover.png", "")
@@ -440,7 +440,7 @@ class Settings:
                         screen = self.toggle_fullscreen(screen)
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            # Переинициализация кнопок после изменения режима
+                            # Переініціалізація кнопок після зміни режиму
                             fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                                             "Assets/Buttons/fullscreen_button.png",
                                                             "Assets/Buttons/fullscreen_button_hover.png", "")
@@ -469,7 +469,7 @@ class Settings:
                 for btn in [fullscreen_button, resolution_button, save_button, back_button]:
                     btn.handle_event(event)
 
-            # Центрируем кнопки по ширине и масштабируем по высоте
+            # Центруємо кнопки по ширині та масштабуємо по висоті
             fullscreen_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.35)
             resolution_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.45)
             save_button.rect.topleft = ((self.width - 252) / 2, self.height * 0.55)
@@ -484,22 +484,22 @@ class Settings:
         return screen
 
     def toggle_fullscreen(self, screen):
-        """Переключаємо між звичайним і повноэкранным режимом, изменяя разрешение монитора только в полноэкранном режиме"""
+        """Переключаємо між звичайним і повноекранним режимом, змінюючи розширення монітора тільки в повноекранному режимі"""
         self.fullscreen = not self.fullscreen
         if self.fullscreen:
-            # В полноэкранном режиме устанавливаем указанное разрешение, изменяя разрешение монитора
+            # У повноекранному режимі встановлюємо вказане розширення, змінюючи розширення монітора
             resolutions = [(3440, 1440), (2752, 1152), (1920, 1080), (1280, 720), (1024, 768)]
             if (self.width, self.height) in resolutions:
                 screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
             else:
-                # Если указанное разрешение не в списке, используем максимальное разрешение монитора
+                # Якщо вказане розширення не в списку, використовуємо максимальне розширення монітора
                 info = pygame.display.Info()
                 self.width, self.height = info.current_w, info.current_h
                 screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         else:
-            # В оконном режиме устанавливаем указанное разрешение как размер окна, не меняя разрешение монитора
+            # У віконному режимі встановлюємо вказане розширення як розмір вікна, не змінюючи розширення монітора
             screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-            # Убедимся, что окно не превышает размер монитора
+            # Переконуємося, що вікно не перевищує розмір монітора
             info = pygame.display.Info()
             if self.width > info.current_w or self.height > info.current_h:
                 self.width, self.height = min(self.width, info.current_w), min(self.height, info.current_h)
@@ -507,11 +507,11 @@ class Settings:
         self.slider_width = self.width // 3
         self.slider_x_start = (self.width - self.slider_width) // 2
         self.update_slider_position()
-        self.save_settings()  # Сохраняем изменения полноэкранного режима
+        self.save_settings()  # Зберігаємо зміни повноекранного режиму
         return screen
 
     def change_resolution(self, screen):
-        """Змінюємо роздільну здатность в обоих режимах, изменяя разрешение монитора только в полноэкранном режиме"""
+        """Змінюємо роздільну здатність в обох режимах, змінюючи розширення монітора тільки в повноекранному режимі"""
         resolutions = [(3440, 1440), (2752, 1152), (1920, 1080), (1280, 720), (1024, 768)]
         current_resolution = (self.width, self.height)
         index = resolutions.index(current_resolution) if current_resolution in resolutions else 0
@@ -521,16 +521,16 @@ class Settings:
         self.slider_x_start = (self.width - self.slider_width) // 2
         self.update_slider_position()
         if self.fullscreen:
-            # В полноэкранном режиме устанавливаем указанное разрешение, изменяя разрешение монитора
+            # У повноекранному режимі встановлюємо вказане розширення, змінюючи розширення монітора
             screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
         else:
-            # В оконном режиме устанавливаем указанное разрешение как размер окна, не меняя разрешение монитора
+            # У віконному режимі встановлюємо вказане розширення як розмір вікна, не змінюючи розширення монітора
             screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-            # Убедимся, что окно не превышает размер монитора
+            # Переконуємося, що вікно не перевищує розмір монітора
             info = pygame.display.Info()
             if self.width > info.current_w or self.height > info.current_h:
                 self.width, self.height = min(self.width, info.current_w), min(self.height, info.current_h)
                 screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
-        self.save_settings()  # Сохраняем новое разрешение
+        self.save_settings()  # Зберігаємо нове розширення
         print(f"🔄 Змінено роздільну здатність на: {new_resolution[0]}x{new_resolution[1]}")
         return screen

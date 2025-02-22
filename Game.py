@@ -5,26 +5,24 @@ import time
 import cv2
 import sys
 
-
 class Game:
-    def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None):
+    def __init__(self, screen=None, cap=None):
         self.start_time = None  # it does nothing but don't touch it. Attribute warning
         self.running = None  # it does nothing but don't touch it. Attribute warning
-        info = pygame.display.Info()
-        self.WIDTH, self.HEIGHT = info.current_w, info.current_h
-        # Используем переданный screen, если он есть, или создаем новый
+        # Використовуємо переданий screen, якщо він є
         if screen is not None:
             self.screen = screen
+            info = pygame.display.Info()
+            self.WIDTH, self.HEIGHT = self.screen.get_width(), self.screen.get_height()
         else:
-            if fullscreen:
-                self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.FULLSCREEN)
-            else:
-                self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+            info = pygame.display.Info()
+            self.WIDTH, self.HEIGHT = info.current_w, info.current_h
+            self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))  # Використовуємо базовий режим вікна
         self.clock = pygame.time.Clock()
-        # Используем переданный cap или создаем новый
+        # Використовуємо переданий cap або створюємо новий
         self.cap = cap if cap is not None else cv2.VideoCapture("Assets/Background/lvl1.mp4")
-        self.cap.set(cv2.CAP_PROP_FPS, 30)  # Установим 30 FPS для стабильности
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1000)  # Увеличим буфер для быстрого чтения кадров
+        self.cap.set(cv2.CAP_PROP_FPS, 30)  # Встановимо 30 FPS для стабільності
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1000)  # Збільшимо буфер для швидкого читання кадрів
         self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
 
         # bird sprite-sheet sett
@@ -85,15 +83,15 @@ class Game:
         # Initialize bird list
         self.birds = []
 
-        # Буферизованный кадр для плавного старта
-        self.last_frame = last_frame
+        # Буферизований кадр для плавного старту
+        self.last_frame = None
 
     # Function to start level
     def start_level(self):
         pygame.mouse.set_visible(False)
         self.running = True
         self.start_time = time.time()
-        clock = pygame.time.Clock()  # Добавляем Clock для управления FPS
+        clock = pygame.time.Clock()  # Додаємо Clock для керування FPS
 
         # Game loop
         while self.running:
@@ -101,10 +99,7 @@ class Game:
             self.update_game_state()
             self.draw_game_state()
             pygame.display.flip()
-            clock.tick(60)  # Устанавливаем 60 FPS для плавного рендеринга
-
-        # Возвращаем последний кадр после завершения игры, даже если он None
-        return self.last_frame if self.last_frame is not None else None
+            clock.tick(60)  # Встановлюємо 60 FPS для плавного рендерингу
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -223,7 +218,7 @@ class Game:
     def draw_game_state(self):
         # Video background
         try:
-            # Повторяем попытку чтения кадра до успеха (максимум 5 попыток)
+            # Повторюємо спробу читання кадру до успіху (максимум 5 спроб)
             ret, frame = None, None
             attempts = 5
             while attempts > 0 and (not ret or frame is None):
@@ -232,25 +227,25 @@ class Game:
                     self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                 attempts -= 1
                 if attempts == 0 and not ret:
-                    raise Exception("Не удалось загрузить кадр видео после нескольких попыток")
+                    raise Exception("Не вдалося завантажити кадр відео після кількох спроб")
 
-            # Используем буферизованный кадр, если новый еще не загружен
+            # Використовуємо буферизований кадр, якщо новий ще не завантажено
             if self.last_frame:
-                self.screen.blit(self.last_frame, (0, 0))  # Используем последний кадр из буфера
-            # Масштабируем видео под текущее разрешение с оптимизацией
+                self.screen.blit(self.last_frame, (0, 0))  # Використовуємо останній кадр із буфера
+            # Масштабуємо відео під поточне розширення з оптимізацією
             info = pygame.display.Info()
             max_width, max_height = min(self.WIDTH, info.current_w), min(self.HEIGHT, info.current_h)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.resize(frame, (max_width, max_height), interpolation=cv2.INTER_LINEAR)
             frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-            self.last_frame = frame_surface  # Обновляем буфер
+            self.last_frame = frame_surface  # Оновлюємо буфер
             self.screen.blit(frame_surface, (0, 0))
         except Exception as e:
-            print(f"Ошибка при обработке видео в игре: {e}")
+            print(f"Помилка при обробці відео в грі: {e}")
             if self.last_frame:
-                self.screen.blit(self.last_frame, (0, 0))  # Используем последний удачный кадр, если ошибка
+                self.screen.blit(self.last_frame, (0, 0))  # Використовуємо останній вдалий кадр, якщо помилка
             else:
-                self.screen.fill((0, 0, 0))  # Черный экран только если нет буфера
+                self.screen.fill((0, 0, 0))  # Чорний екран тільки якщо немає буфера
 
         # Draw birds
         for bird in self.birds:
@@ -282,4 +277,4 @@ class Game:
         scope = pygame.image.load('Assets/Hud/scope.png')
         scope = pygame.transform.scale(scope, (self.WIDTH // 27.4, self.HEIGHT // 15.4))
         scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
-        self.screen.blit(scope, scope_rect)  # Корректно рисуем прицел
+        self.screen.blit(scope, scope_rect)  # Коректно малюємо приціл
