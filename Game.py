@@ -6,7 +6,8 @@ import cv2
 import sys
 
 class Game:
-    def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None):
+    def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None, bird_speed = None, birdLevelCount = None,
+                 levelType = None, ammoLevel = None):
         self.start_time = None #it does nothing but don't touch it. Attribute warning
         self.running = None #it does nothing but don't touch it. Attribute warning
         info = pygame.display.Info()
@@ -69,10 +70,10 @@ class Game:
         self.SpriteHeight_Diagonally = self.sprite_sheet_Diagonally.get_height() // self.Rows
 
         #Bird parameters
-        self.birdSpeed = 1
+        self.birdSpeed = bird_speed
         self.spawn_point = [(-200, 0), (-200, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
         self.ground_spawn_point = [0, 1000]
-        self.birdLevelCount = 11 #how many birds can be on screen. Recommended number 9-13
+        self.birdLevelCount = birdLevelCount #how many birds can be on screen. Recommended number 9-13
 
         #Player stats
         self.level_timer = 40 #If you want to change time fo level, u need to make sure that background video length is >= level_timer
@@ -82,10 +83,29 @@ class Game:
         self.death_times = {}
         self.shootDelay = 500
         self.last_shot_time = 0
-        self.ammo = 8
+        self.ammo = None
+        self.magazine = None
 
         #Initialize bird list
         self.birds = []
+
+
+        #Level settings
+        self.levelType = levelType
+        self.ammoLevel = ammoLevel
+
+        if ammoLevel == 0:
+            self.ammo = 4
+            self.magazine = 4
+        elif ammoLevel == 1:
+            self.ammo = 6
+            self.magazine = 6
+        elif ammoLevel == 2:
+            self.ammo = 8
+            self.magazine = 8
+        elif ammoLevel == 3:
+            self.ammo = 10
+            self.magazine = 10
 
     #Function to start level
     def start_level(self):
@@ -224,7 +244,7 @@ class Game:
         #reloading
         if self.ammo <= 0:
             if current_time - self.last_shot_time >= 3000:
-                self.ammo = 8
+                self.ammo = self.magazine
             return
 
     def spawn_bird(self):
@@ -232,37 +252,85 @@ class Game:
 
         if self.birdLevelCount > 0:
             bird_types = ["blue", "red", "yellow", "black-fatty", "diagonally"]
-            spawn_weight = [50, 30, 10, 9, 1] # birds rarity
-
-            bird_type = random.choices(bird_types, weights = spawn_weight, k= 1)[0]
 
             new_bird = None #it does nothing but don't touch it, or you will get "reference" warning
 
+
+            #level difficulty constructor settings, don't touch it
+
+            #easy
+            if self.birdSpeed == 0:
+                blueSpeed = random.choice([0.5, 0.75, 1])
+                redSpeed = random.choice([1, 2, 3])
+                yellowSpeed = 6
+                blackSpeed = 0.3
+                blackHp = 2
+                diagonallySpeed = 1.5
+            # normal
+            elif self.birdSpeed == 1:
+                blueSpeed = random.choice([0.75, 1, 1.25, 1.5])
+                redSpeed = 3
+                yellowSpeed = 9
+                blackSpeed = 0.4
+                blackHp = 3
+                diagonallySpeed = 2
+            #hard
+            elif self.birdSpeed == 2:
+                blueSpeed = random.choice([1.25, 1.5, 1.75, 2])
+                redSpeed = 5
+                yellowSpeed = 12
+                blackSpeed = 0.8
+                blackHp = 4
+                diagonallySpeed = 4
+                ...
+            else : #if something goes wrong
+                blueSpeed = 1
+                redSpeed = 1
+                yellowSpeed = 1
+                blackSpeed = 1
+                blackHp = 1
+                diagonallySpeed = 1
+
+            if self.levelType  < 3:
+                spawn_weight = [100, 0, 0, 0, 0]  # birds rarity
+            elif self.levelType == 2:
+                spawn_weight = [65, 30, 0, 0, 0]
+            elif 2 < self.levelType <= 4:
+                spawn_weight = [65, 30, 5, 0, 0]
+            elif 4 < self.levelType <= 6:
+                spawn_weight = [50, 30, 10, 10, 0]
+            elif self.levelType > 6 :
+                spawn_weight = [20, 20, 20, 20, 20]
+            else : spawn_weight = [50, 30, 10, 9, 1] #if something goes wrong
+
+            bird_type = random.choices(bird_types, weights=spawn_weight, k=1)[0]
+            # # # # # # # # # # # #
+
             #Blue Bird
             if bird_type == "blue":
-                new_bird = Bird(1, spawn_points[0], spawn_points[1], random.choice([0.75, 1, 1.25, 1.5]), 1, 1, False,
+                new_bird = Bird(1, spawn_points[0], spawn_points[1], blueSpeed, 1, 1, False,
                                 True, random.choice([True, False]), random.choice([True, False]),
                                 self.sprite_sheet_blue, self.SpritePerRow, self.SpriteWidth_Blue, self.SpriteHeight_Blue)
             #Red Bird
             elif bird_type == "red":
-                new_bird = Bird(2, spawn_points[0], spawn_points[1], 3, 1, 0.1, False,
+                new_bird = Bird(2, spawn_points[0], spawn_points[1], redSpeed, 1, 0.1, False,
                                 True, random.choice([True, False]), random.choice([True, False]),
                                 self.sprite_sheet_red, self.SpritePerRow, self.SpriteWidth_Red, self.SpriteHeight_Red)
             #Yellow Bird
             elif bird_type == "yellow":
-                new_bird = Bird(10, spawn_points[0], spawn_points[1], 9, 1, 1, False, True, random.choice([True, False]),
+                new_bird = Bird(10, spawn_points[0], spawn_points[1], yellowSpeed, 1, 1, False, True, random.choice([True, False]),
                                 random.choice([True, False]),
                                 self.sprite_sheet_yellow, self.SpritePerRow, self.SpriteWidth_Yellow, self.SpriteHeight_Yellow)
             #Black Bird
             elif bird_type == "black-fatty":
-                new_bird = Bird(5, spawn_points[0], spawn_points[1], 0.4, 3, 1, False, True, random.choice([True, False]),
+                new_bird = Bird(5, spawn_points[0], spawn_points[1], blackSpeed, blackHp, 1, False, True, random.choice([True, False]),
                                 random.choice([True, False]),
                                 self.sprite_sheet_BlackFatty, self.SpritePerRow, self.SpriteWidth_BlackFatty, self.SpriteHeight_BlackFatty)
 
             #Diagonally Bird
             elif bird_type == "diagonally":
                 new_bird = Bird(7, self.ground_spawn_point[0], self.ground_spawn_point[1],
-                                2, 2, 99999, False,
+                                diagonallySpeed, 2, 99999, False,
                                 True, True, False,
                                 self.sprite_sheet_Diagonally, self.SpritePerRow, self.SpriteWidth_Diagonally, self.SpriteHeight_Diagonally)
 

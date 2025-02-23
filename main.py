@@ -141,6 +141,22 @@ def main_menu():
     pygame.quit()
     sys.exit()
 
+def levelScreenSettings(game_last_frame, last_frame):
+    if game_last_frame:
+        if settings.fullscreen:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+        screen.blit(game_last_frame, (0, 0))
+        pygame.display.flip()
+    elif last_frame:
+        if settings.fullscreen:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+        screen.blit(last_frame, (0, 0))
+        pygame.display.flip()
+
 def select_level():
     global screen, cap, settings
     running = True
@@ -221,22 +237,50 @@ def select_level():
             if event.type == pygame.USEREVENT:
                 fade_screen()
                 if event.button == Lbutton1:
-                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed= 0, birdLevelCount= 6, levelType=1, ammoLevel = 0)
                     game_last_frame = game.start_level()
-                    if game_last_frame:
-                        if settings.fullscreen:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
-                        else:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
-                        screen.blit(game_last_frame, (0, 0))
-                        pygame.display.flip()
-                    elif last_frame:
-                        if settings.fullscreen:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
-                        else:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
-                        screen.blit(last_frame, (0, 0))
-                        pygame.display.flip()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton2:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed= 0, birdLevelCount= 6, levelType=2, ammoLevel = 0)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton3:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=8, levelType=3, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton4:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=10, levelType=4, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton5:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=12, levelType=5, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton6:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=14, levelType=6, ammoLevel = 2)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton7:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=16, levelType=7, ammoLevel = 2)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton8:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=18, levelType=8, ammoLevel = 3)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton9:
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=25, levelType=9, ammoLevel = 3)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
 
 
                 #Here add new levels
