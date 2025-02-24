@@ -282,9 +282,6 @@ def select_level():
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
 
-
-                #Here add new levels
-
                 elif event.button == back_button:
                     fade_screen()
                     running = False
