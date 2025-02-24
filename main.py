@@ -54,18 +54,12 @@ def fade_screen():
         pygame.time.delay(20)
 
 def main_menu():
+    background_image = pygame.image.load("Assets/Background/lvl1.png")
+    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
     running = True
     while running:
-        ret, frame = cap.read()
-        if not ret:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            continue
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (WIDTH, HEIGHT))
-        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-        screen.blit(frame_surface, (0, 0))
-
+        screen.blit(background_image, (0, 0))
         draw_text_with_outline("Duck Hunt", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
 
         for event in pygame.event.get():
@@ -98,10 +92,12 @@ def main_menu():
 
         pygame.display.flip()
 
-    cap.release()
     pygame.quit()
 
 def select_level():
+    background_image = pygame.image.load("Assets/Background/lvl1.png")
+    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+
     level_buttons = []
     positions = [(WIDTH / 2 - 140, 400), (WIDTH / 2 - 35, 400), (WIDTH / 2 + 70, 400),
                  (WIDTH / 2 - 140, 500), (WIDTH / 2 - 35, 500), (WIDTH / 2 + 70, 500),
@@ -122,15 +118,8 @@ def select_level():
 
     running = True
     while running:
-        ret, frame = cap.read()
-        if not ret:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            continue
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (WIDTH, HEIGHT))
-        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-        screen.blit(frame_surface, (0, 0))
+        screen.blit(background_image, (0, 0))
 
         draw_text_with_outline("Select Level", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
 
@@ -162,10 +151,11 @@ def select_level():
 
         pygame.display.flip()
 
-    cap.release()
     pygame.quit()
 
 def settings_menu():
+    background_image = pygame.image.load("Assets/Background/lvl1.png")
+    background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
     #buttons init
     audio_button = ImageButton(WIDTH / 2 - (252 / 2), 400, 252, 74, "", "Assets/Buttons/audio_button.png","Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3")
     video_button = ImageButton(WIDTH / 2 - (252 / 2), 500, 252, 74, "","Assets/Buttons/video_button.png", "Assets/Buttons/video_button_hover.png","Assets/Sounds/click.mp3")
@@ -173,17 +163,7 @@ def settings_menu():
 
     running = True
     while running:
-
-        # video bg will be swapped later
-        ret, frame = cap.read()
-        if not ret:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart video
-            continue
-
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (1920, 1080))
-        frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-        screen.blit(frame_surface,  (0, 0))
+        screen.blit(background_image, (0, 0))
 
         #Duck hunt menu banner
         draw_text_with_outline("Settings", font, (255, 255, 255), (0, 0, 0), WIDTH / 2, 330)
@@ -217,7 +197,6 @@ def settings_menu():
         pygame.display.flip()
 
     #release video data
-    cap.release()
     pygame.quit()
 
 def main():
