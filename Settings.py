@@ -39,11 +39,8 @@ class Settings:
         # Завантажуємо звук кнопок
         self.sound_path = "Assets/Sounds/click.mp3"
         self.sound_loaded = os.path.exists(self.sound_path)
-        if self.sound_loaded:
-            pygame.mixer.music.load(self.sound_path)
-            pygame.mixer.music.set_volume(self.volume)  # Встановлюємо поточну гучність
-        else:
-            print(f"⚠️ Файл {self.sound_path} не знайдено! Звук кнопок вимкнено.")
+        if self.sound_path:
+            self.sound = pygame.mixer.Sound(self.sound_path)
 
         # Прапорець для відображення повідомлення про збереження налаштувань
         self.settings_saved = False
@@ -159,8 +156,7 @@ class Settings:
                         return screen
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if audio_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade перед переходом до аудіо налаштувань
                         screen = self.audio_settings(screen, font, draw_text_with_outline, main_menu)
                         if screen:
@@ -173,8 +169,7 @@ class Settings:
                             back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
                                                       "Assets/Buttons/exit_button_hover.png", "")
                     elif video_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade перед переходом до відео налаштувань
                         screen = self.video_settings(screen, font, draw_text_with_outline, main_menu)
                         if screen:
@@ -187,8 +182,7 @@ class Settings:
                             back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
                                                       "Assets/Buttons/exit_button_hover.png", "")
                     elif back_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при поверненні до головного меню
                         running = False
                         return screen
@@ -290,15 +284,13 @@ class Settings:
                                 pygame.mixer.music.set_volume(0.0)
                             settings_changed = True
                             self.settings_saved = False
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при натисканні на Mute
                     elif save_button.rect.collidepoint(event.pos):
                         self.save_settings()
                         previous_volume = self.volume
                         settings_changed = False
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при збереженні
                         print("✅ Налаштування збережено!")
                     elif back_button.rect.collidepoint(event.pos):
@@ -307,8 +299,7 @@ class Settings:
                             self.update_slider_position()
                             if self.sound_loaded:
                                 pygame.mixer.music.set_volume(self.volume)
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при поверненні
                         running = False
                         return screen
@@ -458,8 +449,7 @@ class Settings:
                             back_button = ImageButton((self.width - 252) / 2, self.height * 0.65, 252, 74, "",
                                                       "Assets/Buttons/back_button.png",
                                                       "Assets/Buttons/back_button_hover.png", "")
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                     elif fullscreen_button.rect.collidepoint(event.pos):
                         screen = self.toggle_fullscreen(screen)
                         if screen:
@@ -477,17 +467,14 @@ class Settings:
                             back_button = ImageButton((self.width - 252) / 2, self.height * 0.65, 252, 74, "",
                                                       "Assets/Buttons/back_button.png",
                                                       "Assets/Buttons/back_button_hover.png", "")
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                     elif save_button.rect.collidepoint(event.pos):
                         self.save_settings()
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при збереженні
                         print("✅ Налаштування відео збережено!")
                     elif back_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded:
-                            pygame.mixer.music.play()
+                        self.sound.play()
                         self.fade_screen(screen)  # Fade при поверненні
                         running = False
                         return screen

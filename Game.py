@@ -13,6 +13,12 @@ class Game:
         info = pygame.display.Info()
         self.WIDTH, self.HEIGHT = info.current_w, info.current_h
 
+        self.shot_sound = pygame.mixer.Sound("Assets/Sounds/shot_sound.wav")
+        self.reload_sound = pygame.mixer.Sound("Assets/Sounds/reload_sound.mp3")
+        self.awp_shot_sound = pygame.mixer.Sound("Assets/Sounds/awp_shot_sound.mp3")
+
+        self.sound_play = False
+
         if screen is not None:
             self.screen = screen
         else:
@@ -196,6 +202,7 @@ class Game:
         if self.ammo > 0:
             current_time = pygame.time.get_ticks()
             if current_time - self.last_shot_time >= self.shootDelay:
+                self.awp_shot_sound.play()
                 self.total_shots += 1
                 for bird in self.birds:
                     if bird.check_collision(mouse_pos):
@@ -243,8 +250,12 @@ class Game:
 
         #reloading
         if self.ammo <= 0:
+            if self.sound_play == False:
+                self.sound_play = True
+                self.reload_sound.play()
             if current_time - self.last_shot_time >= 3000:
                 self.ammo = self.magazine
+                self.sound_play = False
             return
 
     def spawn_bird(self):
