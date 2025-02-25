@@ -243,58 +243,86 @@ def select_level():
                 fade_screen()
                 if event.button == Lbutton1:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/main_theme.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed= 0, birdLevelCount= 6, levelType=1, ammoLevel = 0)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton2:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed= 0, birdLevelCount= 6, levelType=2, ammoLevel = 0)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton3:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=1, birdLevelCount=8, levelType=3, ammoLevel = 1)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton4:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=1, birdLevelCount=10, levelType=4, ammoLevel = 1)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton5:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=1, birdLevelCount=12, levelType=5, ammoLevel = 1)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton6:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=1, birdLevelCount=14, levelType=6, ammoLevel = 2)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton7:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=2, birdLevelCount=16, levelType=7, ammoLevel = 2)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton8:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=2, birdLevelCount=18, levelType=8, ammoLevel = 3)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
                 if event.button == Lbutton9:
                     pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                 bird_speed=2, birdLevelCount=25, levelType=9, ammoLevel = 3)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
+
 
 
                 #Here add new levels

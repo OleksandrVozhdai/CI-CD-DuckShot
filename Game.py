@@ -6,6 +6,7 @@ import cv2
 import sys
 
 class Game:
+    pygame.mixer.init()
     def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None, bird_speed = None, birdLevelCount = None,
                  levelType = None, ammoLevel = None):
         self.start_time = None #it does nothing but don't touch it. Attribute warning
@@ -157,8 +158,12 @@ class Game:
             self.screen.blit(rendered_text, text_rect)
             y_offset += 50
 
+        pygame.mixer.music.stop()
         pygame.display.flip()
         pygame.time.wait(5000)
+        pygame.mixer.music.load("Assets/Sounds/main_theme.mp3")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
 
     def draw_pause_screen(self):
         font = pygame.font.SysFont('Comic Sans MS', 72)
