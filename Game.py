@@ -113,7 +113,8 @@ class Game:
             f"Total Shots: {self.total_shots}",
             f"Hits: {self.total_hits}",
             f"Hit Accuracy: {accuracy:.2f}%",
-            f"Birds Shot Down: {len(self.death_times)}"
+            f"Birds Shot Down: {len(self.death_times)}",
+            f"Score: {self.score}"
         ]
 
         y_offset = self.HEIGHT // 3
@@ -303,8 +304,8 @@ class Game:
         # Draw Ammo icons
         ammo = pygame.image.load('Assets/Hud/ammo.png')
         ammo = pygame.transform.scale(ammo, (self.WIDTH // 128, self.HEIGHT // 27))
-        ammo_x_start = (self.WIDTH // 2) - ((self.ammo * (self.WIDTH * 0.012)) // 2)
-        ammo_y = self.HEIGHT - hud_height // 2 + timer_text.get_height() // 2
+        ammo_x_start = self.WIDTH - (self.ammo * (self.WIDTH * 0.012)) - (self.WIDTH * 0.02)
+        ammo_y = self.HEIGHT - hud_height // 2 - ammo.get_height() // 2
 
         for i in range(self.ammo):
             self.screen.blit(ammo, (ammo_x_start + i * (self.WIDTH * 0.012), ammo_y))
