@@ -115,7 +115,8 @@ class Settings:
             pygame.time.delay(10)
 
     def settings_menu(self, screen, font, draw_text_with_outline, main_menu):
-        # Ініціалізація кнопок для меню налаштувань
+
+       # Ініціалізація кнопок для меню налаштувань
         audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
                                    "Assets/Buttons/audio_button_hover.png", "")
         video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
@@ -285,13 +286,13 @@ class Settings:
                             settings_changed = True
                             self.settings_saved = False
                         self.sound.play()
-                        self.fade_screen(screen)  # Fade при натисканні на Mute
+
                     elif save_button.rect.collidepoint(event.pos):
                         self.save_settings()
                         previous_volume = self.volume
                         settings_changed = False
                         self.sound.play()
-                        self.fade_screen(screen)  # Fade при збереженні
+
                         print("✅ Налаштування збережено!")
                     elif back_button.rect.collidepoint(event.pos):
                         if settings_changed and not self.settings_saved:
@@ -397,7 +398,7 @@ class Settings:
                         screen = self.toggle_fullscreen(screen)
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
-                            self.fade_screen(screen)  # Fade при переключенні повноекранного режиму
+
                             # Оновлюємо кнопки після зміни режиму
                             fullscreen_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
                                                             "Assets/Buttons/fullscreen_button.png",
@@ -471,7 +472,7 @@ class Settings:
                     elif save_button.rect.collidepoint(event.pos):
                         self.save_settings()
                         self.sound.play()
-                        self.fade_screen(screen)  # Fade при збереженні
+
                         print("✅ Налаштування відео збережено!")
                     elif back_button.rect.collidepoint(event.pos):
                         self.sound.play()
