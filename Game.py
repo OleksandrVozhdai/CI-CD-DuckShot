@@ -312,13 +312,13 @@ class Game:
                 blackHp = 1
                 diagonallySpeed = 1
 
-            if self.levelType  < 3:
+            if self.levelType  < 2:
                 spawn_weight = [100, 0, 0, 0, 0]  # birds rarity
-            elif self.levelType == 2:
+            elif 2 <= self.levelType <= 3:
                 spawn_weight = [65, 30, 0, 0, 0]
-            elif 2 < self.levelType <= 4:
+            elif 3 < self.levelType <= 5:
                 spawn_weight = [65, 30, 5, 0, 0]
-            elif 4 < self.levelType <= 6:
+            elif 5 < self.levelType <= 6:
                 spawn_weight = [50, 30, 10, 10, 0]
             elif self.levelType > 6 :
                 spawn_weight = [20, 20, 20, 20, 20]

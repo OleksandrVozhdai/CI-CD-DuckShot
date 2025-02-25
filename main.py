@@ -243,7 +243,7 @@ def select_level():
                 fade_screen()
                 if event.button == Lbutton1:
                     pygame.mixer.music.stop()
-                    pygame.mixer.music.load("Assets/Sounds/main_theme.mp3")
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
                     pygame.mixer.music.set_volume(0.5)
                     pygame.mixer.music.play(-1)
                     game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
