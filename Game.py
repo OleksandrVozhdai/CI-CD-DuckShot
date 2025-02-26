@@ -30,7 +30,11 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.video_path = "Assets/Background/lvl1.mp4"
-        self.cap = cv2.VideoCapture(self.video_path)
+        self.lvl2_video = "Assets/Background/lvl2.mp4"
+        self.lvl3_video = "Assets/Background/lvl3.mp4"
+        self.ammoSprite = "Assets/Hud/ammo.png"
+
+
         self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
         self.paused = False
         self.pause_start_time = 0
@@ -100,6 +104,13 @@ class Game:
         #Level settings
         self.levelType = levelType
         self.ammoLevel = ammoLevel
+
+        if 3 < self.levelType <= 6:
+            self.cap = cv2.VideoCapture(self.lvl2_video)
+        elif self.levelType > 6:
+            self.cap = cv2.VideoCapture(self.lvl3_video)
+        else:
+            self.cap = cv2.VideoCapture(self.video_path)
 
         if ammoLevel == 0:
             self.ammo = 4
@@ -325,6 +336,10 @@ class Game:
             else : spawn_weight = [50, 30, 10, 9, 1] #if something goes wrong
 
             bird_type = random.choices(bird_types, weights=spawn_weight, k=1)[0]
+
+
+
+
             # # # # # # # # # # # #
 
             #Blue Bird
@@ -398,10 +413,17 @@ class Game:
         self.screen.blit(controls_text, (controls_x, controls_y))
 
         # Draw Ammo icons
-        ammo = pygame.image.load('Assets/Hud/ammo.png')
+        if  0 < self.levelType <= 3:
+            ammo = pygame.image.load('Assets/Hud/ammo.png')
+        elif 3 < self.levelType <= 6:
+            ammo = pygame.image.load('Assets/Hud/ammo_white.png')
+        else:
+            ammo = pygame.image.load('Assets/Hud/ammo_white.png')
+
         ammo = pygame.transform.scale(ammo, (self.WIDTH // 128, self.HEIGHT // 27))
         ammo_x_start = self.WIDTH - (self.ammo * (self.WIDTH * 0.012)) - (self.WIDTH * 0.02)
         ammo_y = self.HEIGHT - hud_height // 2 - ammo.get_height() // 2
+
 
         for i in range(self.ammo):
             self.screen.blit(ammo, (ammo_x_start + i * (self.WIDTH * 0.012), ammo_y))

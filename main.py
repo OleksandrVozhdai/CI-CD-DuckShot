@@ -11,6 +11,7 @@ info = pygame.display.Info()
 
 # Initialize cap first so it is available
 video_path = "Assets/Background/lvl1.mp4"
+
 cap = cv2.VideoCapture(video_path)
 
 # Limit video frame rate for optimization
@@ -322,11 +323,6 @@ def select_level():
                                 bird_speed=2, birdLevelCount=25, levelType=9, ammoLevel = 3)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
-
-
-
-                #Here add new levels
-
                 elif event.button == back_button:
                     fade_screen()
                     running = False
