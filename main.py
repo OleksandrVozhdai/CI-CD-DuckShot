@@ -38,11 +38,14 @@ pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
 # Initialize buttons with current resolution
-start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "", "Assets/Buttons/new_game_button.png",
+start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "",
+                           "Assets/Buttons/new_game_button.png",
                           "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
-settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "", "Assets/Buttons/settings_button.png",
+settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "",
+                              "Assets/Buttons/settings_button.png",
                              "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
-exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "",
+                          "Assets/Buttons/exit_button.png",
                          "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
 def draw_text_with_outline(text, font, text_color, outline_color, x, y, surface):
@@ -122,11 +125,14 @@ def main_menu():
                     if screen:
                         settings.width, settings.height = screen.get_width(), screen.get_height()
 
-                        start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "", "Assets/Buttons/new_game_button.png",
+                        start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "",
+                                                   "Assets/Buttons/new_game_button.png",
                                                   "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
-                        settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "", "Assets/Buttons/settings_button.png",
+                        settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "",
+                                                      "Assets/Buttons/settings_button.png",
                                                      "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
-                        exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+                        exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "",
+                                                  "Assets/Buttons/exit_button.png",
                                                  "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
                 elif event.button == exit_button:
                     fade_screen()
@@ -180,25 +186,35 @@ def select_level():
     total_buttons_width = 3 * button_width + 2 * button_spacing
     start_x = (settings.width - total_buttons_width) / 2
 
-    Lbutton1 = ImageButton(start_x - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_1_bird.png",
+    Lbutton1 = ImageButton(start_x - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_1_bird.png",
                            "Assets/Buttons/level_but_hover_1_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton2 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.35, button_width, 74, "", "Assets/Buttons/level_but_2.png",
+    Lbutton2 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.35, button_width, 74, "",
+                           "Assets/Buttons/level_but_2.png",
                            "Assets/Buttons/level_but_hover_2.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton3 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_3_bird.png",
+    Lbutton3 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_3_bird.png",
                            "Assets/Buttons/level_but_hover_3_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton4 = ImageButton(start_x - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_4_bird.png",
+    Lbutton4 = ImageButton(start_x - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_4_bird.png",
                            "Assets/Buttons/level_but_hover_4_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton5 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.45, button_width, 74, "", "Assets/Buttons/level_but_5.png",
+    Lbutton5 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.45, button_width, 74, "",
+                           "Assets/Buttons/level_but_5.png",
                            "Assets/Buttons/level_but_hover_5.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton6 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_6_bird.png",
+    Lbutton6 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_6_bird.png",
                            "Assets/Buttons/level_but_hover_6_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton7 = ImageButton(start_x - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_7_bird.png",
+    Lbutton7 = ImageButton(start_x - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_7_bird.png",
                            "Assets/Buttons/level_but_hover_7_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton8 = ImageButton(start_x + button_width + button_spacing - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "", "Assets/Buttons/level_but_8_bird.png",
+    Lbutton8 = ImageButton(start_x + button_width + button_spacing - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_8_bird.png",
                            "Assets/Buttons/level_but_hover_8_bird.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton9 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.55, button_width, 74, "", "Assets/Buttons/level_but_9.png",
+    Lbutton9 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.55, button_width, 74, "",
+                           "Assets/Buttons/level_but_9.png",
                            "Assets/Buttons/level_but_hover_9.png", "Assets/Sounds/click.mp3", settings)
-    back_button = ImageButton((settings.width - 252) / 2, settings.height * 0.65, 252, 74, "", "Assets/Buttons/back_button.png",
+    back_button = ImageButton((settings.width - 252) / 2, settings.height * 0.65, 252, 74, "",
+                              "Assets/Buttons/back_button.png",
                               "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
     while running:

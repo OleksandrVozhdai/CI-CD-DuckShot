@@ -5,8 +5,6 @@
 
 
 from Birds import Bird
-from confest import dummy_sprite_sheet
-
 
 def test_bird_initialization(dummy_sprite_sheet):
     bird = Bird(

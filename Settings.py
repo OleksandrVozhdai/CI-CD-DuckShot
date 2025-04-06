@@ -117,11 +117,14 @@ class Settings:
     def settings_menu(self, screen, font, draw_text_with_outline, main_menu):
 
        # Ініціалізація кнопок для меню налаштувань
-        audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
+        audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
+                                   "Assets/Buttons/audio_button.png",
                                    "Assets/Buttons/audio_button_hover.png", "")
-        video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
+        video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
+                                   "Assets/Buttons/video_button.png",
                                    "Assets/Buttons/video_button_hover.png", "")
-        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                  "Assets/Buttons/exit_button.png",
                                   "Assets/Buttons/exit_button_hover.png", "")
 
         running = True
@@ -163,11 +166,14 @@ class Settings:
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
                             # Оновлюємо кнопки після зміни розширення
-                            audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
+                            audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
+                                                       "Assets/Buttons/audio_button.png",
                                                        "Assets/Buttons/audio_button_hover.png", "")
-                            video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
+                            video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
+                                                       "Assets/Buttons/video_button.png",
                                                        "Assets/Buttons/video_button_hover.png", "")
-                            back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+                            back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                                      "Assets/Buttons/exit_button.png",
                                                       "Assets/Buttons/exit_button_hover.png", "")
                     elif video_button.rect.collidepoint(event.pos):
                         self.sound.play()
@@ -176,11 +182,14 @@ class Settings:
                         if screen:
                             self.width, self.height = screen.get_width(), screen.get_height()
                             # Оновлюємо кнопки після зміни розширення
-                            audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/audio_button.png",
+                            audio_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
+                                                       "Assets/Buttons/audio_button.png",
                                                        "Assets/Buttons/audio_button_hover.png", "")
-                            video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/video_button.png",
+                            video_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
+                                                       "Assets/Buttons/video_button.png",
                                                        "Assets/Buttons/video_button_hover.png", "")
-                            back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+                            back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                                      "Assets/Buttons/exit_button.png",
                                                       "Assets/Buttons/exit_button_hover.png", "")
                     elif back_button.rect.collidepoint(event.pos):
                         self.sound.play()
@@ -207,11 +216,14 @@ class Settings:
 
     def audio_settings(self, screen, font, draw_text_with_outline, main_menu):
         # Ініціалізація кнопок для аудіо налаштувань
-        mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/mute_button.png",
+        mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
+                                  "Assets/Buttons/mute_button.png",
                                   "Assets/Buttons/mute_button_hover.png", "")
-        save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/save_button.png",
+        save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
+                                  "Assets/Buttons/save_button.png",
                                   "Assets/Buttons/save_button_hover.png", "")
-        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/back_button.png",
+        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                  "Assets/Buttons/back_button.png",
                                   "Assets/Buttons/back_button_hover.png", "")
 
         running = True
@@ -324,11 +336,14 @@ class Settings:
                         self.update_slider_position()
                         screen = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
                         # Оновлюємо кнопки після зміни розміру
-                        mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "", "Assets/Buttons/mute_button.png",
+                        mute_button = ImageButton((self.width - 252) / 2, self.height * 0.35, 252, 74, "",
+                                                  "Assets/Buttons/mute_button.png",
                                                   "Assets/Buttons/mute_button_hover.png", "")
-                        save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "", "Assets/Buttons/save_button.png",
+                        save_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
+                                                  "Assets/Buttons/save_button.png",
                                                   "Assets/Buttons/save_button_hover.png", "")
-                        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/back_button.png",
+                        back_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                                  "Assets/Buttons/back_button.png",
                                                   "Assets/Buttons/back_button_hover.png", "")
 
                 mute_button.handle_event(event)
@@ -355,9 +370,11 @@ class Settings:
         resolution_button = ImageButton((self.width - 252) / 2, self.height * 0.45, 252, 74, "",
                                         "Assets/Buttons/resolution_button.png",
                                         "Assets/Buttons/resolution_button_hover.png", "")
-        save_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "", "Assets/Buttons/save_button.png",
+        save_button = ImageButton((self.width - 252) / 2, self.height * 0.55, 252, 74, "",
+                                  "Assets/Buttons/save_button.png",
                                   "Assets/Buttons/save_button_hover.png", "")
-        back_button = ImageButton((self.width - 252) / 2, self.height * 0.65, 252, 74, "", "Assets/Buttons/back_button.png",
+        back_button = ImageButton((self.width - 252) / 2, self.height * 0.65, 252, 74, "",
+                                  "Assets/Buttons/back_button.png",
                                   "Assets/Buttons/back_button_hover.png", "")
 
         running = True
