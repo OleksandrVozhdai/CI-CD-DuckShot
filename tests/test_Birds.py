@@ -3,7 +3,9 @@
 #here I create a dummy in each function to make sure there will be no problems,
 #I understand that this leads to a dry violation, but I am so sure that nothing will break for sure
 
-
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Birds import Bird
 
 def test_bird_initialization(dummy_sprite_sheet):
