@@ -1,7 +1,8 @@
-#file for fixtures
+# file for fixtures
 
 import pygame
 import pytest
+
 
 @pytest.fixture
 def dummy_sprite_sheet():
