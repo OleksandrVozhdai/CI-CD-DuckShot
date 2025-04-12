@@ -2,8 +2,13 @@ import pygame
 import random
 import time
 
+
 class Bird:
-    def __init__(self, value, x, y, speed, hp, DirectionTimeChange, right, left, up, down, sprite_sheet, SpritePerRow, SpriteWidth, SpriteHeight):
+    bird_counter = 0
+
+    def __init__(self, value, x, y, speed, hp, DirectionTimeChange,
+                 right, left, up, down, sprite_sheet, SpritePerRow,
+                 SpriteWidth, SpriteHeight):
         self.value = value
         self.x = x
         self.y = y
@@ -21,12 +26,15 @@ class Bird:
         self.SpritePerRow = SpritePerRow
         self.SpriteWidth = SpriteWidth
         self.SpriteHeight = SpriteHeight
-        self.sprite_rect = pygame.Rect(self.x, self.y, SpriteWidth, SpriteHeight)
+        self.sprite_rect = pygame.Rect(self.x, self.y,
+                                       SpriteWidth, SpriteHeight)
         self.DirChoice = 1
         self.last_choice_time = time.time()
         self.gravity = 2
         self.alive = True
         self.DirectionTimeChange = DirectionTimeChange
+        self.id = Bird.bird_counter
+        Bird.bird_counter += 1
 
     def check_collision(self, mouse_pos):
         if self.alive:
@@ -38,8 +46,8 @@ class Bird:
         col = self.current_frame % self.SpritePerRow
         x = col * self.SpriteWidth
         y = row * self.SpriteHeight
-        return self.sprite_sheet.subsurface(pygame.Rect(x, y, self.SpriteWidth, self.SpriteHeight))
-
+        return (self.sprite_sheet.subsurface
+                (pygame.Rect(x, y, self.SpriteWidth, self.SpriteHeight)))
 
     def update(self):
         if self.alive:
@@ -60,7 +68,9 @@ class Bird:
                 self.up = True
                 self.down = False
 
-            if current_time - self.last_choice_time >= self.DirectionTimeChange: #change direction every 1 second
+            # change direction every 1 second
+            if (current_time - self.last_choice_time
+                    >= self.DirectionTimeChange):
                 self.DirChoice = random.choice([-1, 1])
                 self.last_choice_time = current_time
 
@@ -78,19 +88,25 @@ class Bird:
         self.frame_timer += 1
         if self.frame_timer >= self.frame_delay:
             self.frame_timer = 0
-            self.current_frame = (self.current_frame + 1) % (self.SpritePerRow * (self.sprite_sheet.get_height() // self.SpriteHeight))
+            self.current_frame = ((self.current_frame + 1)
+                                  % (self.SpritePerRow
+                                     * (self.sprite_sheet.get_height()
+                                        // self.SpriteHeight)))
 
-        self.sprite_rect = pygame.Rect(self.x, self.y, self.SpriteWidth, self.SpriteHeight)
+        self.sprite_rect = pygame.Rect(self.x, self.y, self.SpriteWidth,
+                                       self.SpriteHeight)
 
     def draw(self, screen):
         current_image = self.get_frame()
         if self.alive:
             if self.flipped:
-                current_image = pygame.transform.flip(current_image, True, False)
+                current_image = (pygame.transform.flip
+                                 (current_image, True, False))
         else:
             self.frame_delay = 1
             current_image = pygame.transform.flip(current_image, False, True)
 
         screen.blit(current_image, (self.x, self.y))
+
     def kill(self):
         self.alive = False
