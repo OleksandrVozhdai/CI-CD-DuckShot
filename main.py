@@ -116,11 +116,14 @@ def main_menu():
                     if screen:
                         settings.width, settings.height = screen.get_width(), screen.get_height()
 
-                        start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "", "Assets/Buttons/new_game_button.png",
+                        start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "",
+                                                   "Assets/Buttons/new_game_button.png",
                                                   "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
-                        settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "", "Assets/Buttons/settings_button.png",
+                        settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "",
+                                                      "Assets/Buttons/settings_button.png",
                                                      "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
-                        exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "", "Assets/Buttons/exit_button.png",
+                        exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "",
+                                                  "Assets/Buttons/exit_button.png",
                                                  "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
                 elif event.button == exit_button:
                     fade_screen()
@@ -141,6 +144,22 @@ def main_menu():
     pygame.quit()
     sys.exit()
 
+def levelScreenSettings(game_last_frame, last_frame):
+    if game_last_frame:
+        if settings.fullscreen:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+        screen.blit(game_last_frame, (0, 0))
+        pygame.display.flip()
+    elif last_frame:
+        if settings.fullscreen:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
+        else:
+            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
+        screen.blit(last_frame, (0, 0))
+        pygame.display.flip()
+
 def select_level():
     global screen, cap, settings
     running = True
@@ -158,25 +177,35 @@ def select_level():
     total_buttons_width = 3 * button_width + 2 * button_spacing
     start_x = (settings.width - total_buttons_width) / 2
 
-    Lbutton1 = ImageButton(start_x, settings.height * 0.35, button_width, 74, "", "Assets/Buttons/level_but_1.png",
-                           "Assets/Buttons/level_but_hover_1.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton2 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.35, button_width, 74, "", "Assets/Buttons/level_but_2.png",
+    Lbutton1 = ImageButton(start_x - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_1_bird.png",
+                           "Assets/Buttons/level_but_hover_1_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton2 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.35, button_width, 74, "",
+                           "Assets/Buttons/level_but_2.png",
                            "Assets/Buttons/level_but_hover_2.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton3 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.35, button_width, 74, "", "Assets/Buttons/level_but_3.png",
-                           "Assets/Buttons/level_but_hover_3.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton4 = ImageButton(start_x, settings.height * 0.45, button_width, 74, "", "Assets/Buttons/level_but_4.png",
-                           "Assets/Buttons/level_but_hover_4.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton5 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.45, button_width, 74, "", "Assets/Buttons/level_but_5.png",
+    Lbutton3 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.35 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_3_bird.png",
+                           "Assets/Buttons/level_but_hover_3_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton4 = ImageButton(start_x - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_4_bird.png",
+                           "Assets/Buttons/level_but_hover_4_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton5 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.45, button_width, 74, "",
+                           "Assets/Buttons/level_but_5.png",
                            "Assets/Buttons/level_but_hover_5.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton6 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.45, button_width, 74, "", "Assets/Buttons/level_but_6.png",
-                           "Assets/Buttons/level_but_hover_6.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton7 = ImageButton(start_x, settings.height * 0.55, button_width, 74, "", "Assets/Buttons/level_but_7.png",
-                           "Assets/Buttons/level_but_hover_7.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton8 = ImageButton(start_x + button_width + button_spacing, settings.height * 0.55, button_width, 74, "", "Assets/Buttons/level_but_8.png",
-                           "Assets/Buttons/level_but_hover_8.png", "Assets/Sounds/click.mp3", settings)
-    Lbutton9 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.55, button_width, 74, "", "Assets/Buttons/level_but_9.png",
+    Lbutton6 = ImageButton(start_x + 2 * (button_width + button_spacing) - 5, settings.height * 0.45 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_6_bird.png",
+                           "Assets/Buttons/level_but_hover_6_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton7 = ImageButton(start_x - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_7_bird.png",
+                           "Assets/Buttons/level_but_hover_7_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton8 = ImageButton(start_x + button_width + button_spacing - 5, settings.height * 0.55 - 5, button_width + 10, 74 + 10, "",
+                           "Assets/Buttons/level_but_8_bird.png",
+                           "Assets/Buttons/level_but_hover_8_bird.png", "Assets/Sounds/click.mp3", settings)
+    Lbutton9 = ImageButton(start_x + 2 * (button_width + button_spacing), settings.height * 0.55, button_width, 74, "",
+                           "Assets/Buttons/level_but_9.png",
                            "Assets/Buttons/level_but_hover_9.png", "Assets/Sounds/click.mp3", settings)
-    back_button = ImageButton((settings.width - 252) / 2, settings.height * 0.65, 252, 74, "", "Assets/Buttons/back_button.png",
+    back_button = ImageButton((settings.width - 252) / 2, settings.height * 0.65, 252, 74, "",
+                              "Assets/Buttons/back_button.png",
                               "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
     while running:
@@ -221,26 +250,86 @@ def select_level():
             if event.type == pygame.USEREVENT:
                 fade_screen()
                 if event.button == Lbutton1:
-                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame)
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed= 0, birdLevelCount= 6, levelType=1, ammoLevel = 0)
                     game_last_frame = game.start_level()
-                    if game_last_frame:
-                        if settings.fullscreen:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
-                        else:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
-                        screen.blit(game_last_frame, (0, 0))
-                        pygame.display.flip()
-                    elif last_frame:
-                        if settings.fullscreen:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.FULLSCREEN)
-                        else:
-                            screen = pygame.display.set_mode((settings.width, settings.height), pygame.RESIZABLE)
-                        screen.blit(last_frame, (0, 0))
-                        pygame.display.flip()
-
-
-                #Here add new levels
-
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton2:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed= 0, birdLevelCount= 6, levelType=2, ammoLevel = 0)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton3:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=8, levelType=3, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton4:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=10, levelType=4, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton5:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=12, levelType=5, ammoLevel = 1)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton6:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=1, birdLevelCount=14, levelType=6, ammoLevel = 2)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton7:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=16, levelType=7, ammoLevel = 2)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton8:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=18, levelType=8, ammoLevel = 3)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
+                if event.button == Lbutton9:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load("Assets/Sounds/level_music.mp3")
+                    pygame.mixer.music.set_volume(0.5)
+                    pygame.mixer.music.play(-1)
+                    game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                                bird_speed=2, birdLevelCount=25, levelType=9, ammoLevel = 3)
+                    game_last_frame = game.start_level()
+                    levelScreenSettings(game_last_frame, last_frame)
                 elif event.button == back_button:
                     fade_screen()
                     running = False
