@@ -1,9 +1,14 @@
 # tests/test_settings.py
+import sys
+import os
 import pygame
 import pytest
-import os
 import json
 from unittest.mock import Mock, patch
+
+# Додаємо кореневу папку до sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from Settings import Settings
 
 pygame.init()
@@ -13,7 +18,9 @@ pygame.init()
 def settings(tmp_path):
     cap = Mock()
     settings_file = tmp_path / "settings.json"
-    settings = Settings(width=1920, height=1080, cap=cap)
+    # Мокуємо os.path.exists і load_settings
+    with patch("os.path.exists", return_value=True), patch.object(Settings, "load_settings"):
+        settings = Settings(width=1920, height=1080, cap=cap)
     settings.SETTINGS_FILE = str(settings_file)
     return settings
 
@@ -54,13 +61,12 @@ def test_decrease_volume(settings):
     assert settings.slider_x == expected_slider_x
 
 # Тест із мокуванням для звуку
-@patch("pygame.mixer.Sound")
-def test_volume_update_sound_mocked(mock_sound, settings):
+@patch("pygame.mixer.music.set_volume")
+def test_volume_update_sound_mocked(mock_set_volume, settings):
     settings.sound_loaded = True
-    settings.sound = mock_sound
     initial_volume = settings.volume
     settings.increase_volume()
-    mock_sound.set_volume.assert_called_with(settings.volume)
+    mock_set_volume.assert_called_with(settings.volume)
 
 # Тест для перевірки перемикання повноекранного режиму
 @patch("pygame.display.set_mode")
