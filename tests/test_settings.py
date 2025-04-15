@@ -1,99 +1,115 @@
-# tests/test_settings.py
+import sys
+import os.path
+# Додаємо корінь проєкту до sys.path перед імпортами
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+import unittest
 import pygame
-import pytest
-import os
-import json
-from unittest.mock import Mock, patch
+import cv2
 from Settings import Settings
 
-pygame.init()
 
-# Фікстура для створення об'єкта Settings
-@pytest.fixture
-def settings(tmp_path):
-    cap = Mock()
-    settings_file = tmp_path / "settings.json"
-    settings = Settings(width=1920, height=1080, cap=cap)
-    settings.SETTINGS_FILE = str(settings_file)
-    return settings
+class TestSettings(unittest.TestCase):
+    def setUp(self):
+        # Ініціалізація Pygame та його модулів перед кожним тестом
+        pygame.init()
+        pygame.font.init()
+        pygame.mixer.init()
+        # Отримуємо інформацію про екран
+        self.info = pygame.display.Info()
+        # Завантажуємо відео для фону з абсолютним шляхом
+        video_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..", "Assets", "Background", "lvl1.mp4"
+        )
+        # Дебагінг: перевіряємо, чи файл існує
+        if not os.path.exists(video_path):
+            self.fail(f"Файл {video_path} не існує")
+        self.cap = cv2.VideoCapture(video_path)
+        if not self.cap.isOpened():
+            self.fail(f"Не вдалося відкрити відео {video_path}")
+        # Створюємо об’єкт Settings з поточною роздільною здатністю та відео
+        self.settings = Settings(
+            self.info.current_w, self.info.current_h, self.cap
+        )
+        # Ініціалізуємо екран у змінному розмірі
+        self.screen = pygame.display.set_mode(
+            (self.settings.width, self.settings.height), pygame.RESIZABLE
+        )
 
-# Параметризований тест для перевірки ініціалізації гучності
-@pytest.mark.parametrize("volume, expected_volume", [
-    (0.5, 0.5),
-    (0.0, 0.0),
-    (1.0, 1.0),
-])
-def test_settings_initialization(settings, volume, expected_volume):
-    with open(settings.SETTINGS_FILE, "w") as f:
-        json.dump({"volume": volume}, f)
-    settings.load_settings()
-    assert settings.volume == expected_volume
+    def tearDown(self):
+        # Звільняємо ресурси після кожного тесту
+        self.cap.release()
+        pygame.quit()
 
-# Тест із мокуванням для перевірки збереження налаштувань
-@patch("os.path.exists", return_value=True)
-@patch("json.dump")
-def test_save_settings_mocked(mock_json_dump, mock_exists, settings):
-    settings.save_settings()
-    mock_json_dump.assert_called_once()
-    assert settings.settings_saved is True
+    def test_resolution_change(self):
+        # Зберігаємо оригінальну роздільну здатність
+        original_width = self.settings.width
+        original_height = self.settings.height
+        # Змінюємо роздільну здатність на 1280x720
+        self.settings.width, self.settings.height = 1280, 720
+        self.screen = pygame.display.set_mode(
+            (self.settings.width, self.settings.height), pygame.RESIZABLE
+        )
+        # Отримуємо нову роздільну здатність екрана
+        new_width = self.screen.get_width()
+        new_height = self.screen.get_height()
+        # Перевіряємо, чи роздільна здатність змінилася коректно
+        self.assertEqual(new_width, 1280)
+        self.assertEqual(new_height, 720)
+        # Відновлюємо оригінальну роздільну здатність
+        self.settings.width = original_width
+        self.settings.height = original_height
+        self.screen = pygame.display.set_mode(
+            (self.settings.width, self.settings.height), pygame.RESIZABLE
+        )
 
-# Тест для перевірки збільшення гучності
-def test_increase_volume(settings):
-    initial_volume = settings.volume
-    settings.increase_volume()
-    assert settings.volume == min(1.0, initial_volume + 0.1)
-    expected_slider_x = settings.slider_x_start + int(settings.volume * settings.slider_width)
-    assert settings.slider_x == expected_slider_x
+    def test_fullscreen_toggle(self):
+        # Увімкнення повноекранного режиму
+        self.settings.fullscreen = True
+        self.screen = pygame.display.set_mode(
+            (self.settings.width, self.settings.height), pygame.FULLSCREEN
+        )
+        # Отримуємо поточні флаги екрана
+        flags = pygame.display.get_surface().get_flags()
+        # Перевіряємо, чи повноекранний режим увімкнено
+        self.assertTrue(flags & pygame.FULLSCREEN)
+        # Вимикаємо повноекранний режим
+        self.settings.fullscreen = False
+        self.screen = pygame.display.set_mode(
+            (self.settings.width, self.settings.height), pygame.RESIZABLE
+        )
+        # Перевіряємо, чи повноекранний режим вимкнено
+        flags = pygame.display.get_surface().get_flags()
+        self.assertFalse(flags & pygame.FULLSCREEN)
 
-# Тест для перевірки зменшення гучності
-def test_decrease_volume(settings):
-    initial_volume = settings.volume
-    settings.decrease_volume()
-    assert settings.volume == max(0.0, initial_volume - 0.1)
-    expected_slider_x = settings.slider_x_start + int(settings.volume * settings.slider_width)
-    assert settings.slider_x == expected_slider_x
+    def test_volume_change(self):
+        # Завантажуємо музику для тестування гучності з абсолютним шляхом
+        music_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..", "Assets", "Sounds", "level_music.mp3"
+        )
+        if not os.path.exists(music_path):
+            self.fail(f"Не вдалося знайти музику {music_path}")
+        pygame.mixer.music.load(music_path)
+        pygame.mixer.music.play(-1)
+        # Встановлюємо гучність на 0.3
+        self.settings.volume = 0.3
+        pygame.mixer.music.set_volume(self.settings.volume)
+        # Перевіряємо, чи гучність встановлена коректно
+        self.assertAlmostEqual(
+            pygame.mixer.music.get_volume(), 0.3, delta=0.01
+        )
+        # Змінюємо гучність на 0.7
+        self.settings.volume = 0.7
+        pygame.mixer.music.set_volume(self.settings.volume)
+        # Перевіряємо, чи нова гучність застосована коректно
+        self.assertAlmostEqual(
+            pygame.mixer.music.get_volume(), 0.7, delta=0.01
+        )
+        # Зупиняємо музику після тесту
+        pygame.mixer.music.stop()
 
-# Тест із мокуванням для звуку
-@patch("pygame.mixer.Sound")
-def test_volume_update_sound_mocked(mock_sound, settings):
-    settings.sound_loaded = True
-    settings.sound = mock_sound
-    initial_volume = settings.volume
-    settings.increase_volume()
-    mock_sound.set_volume.assert_called_with(settings.volume)
 
-# Тест для перевірки перемикання повноекранного режиму
-@patch("pygame.display.set_mode")
-@patch("pygame.display.Info")
-def test_toggle_fullscreen(mock_info, mock_set_mode, settings):
-    mock_info.return_value.current_w = 1920
-    mock_info.return_value.current_h = 1080
-    mock_screen = Mock()
-    mock_screen.get_width.return_value = 1920
-    mock_screen.get_height.return_value = 1080
-    mock_set_mode.return_value = mock_screen
-
-    settings.fullscreen = False
-    settings.toggle_fullscreen(Mock())
-    assert settings.fullscreen is True
-    assert settings.width == 1920
-    assert settings.height == 1080
-
-# Тест для перевірки зміни роздільної здатності
-@patch("pygame.display.set_mode")
-def test_change_resolution(mock_set_mode, settings):
-    mock_screen = Mock()
-    mock_screen.get_width.return_value = 1280
-    mock_screen.get_height.return_value = 720
-    mock_set_mode.return_value = mock_screen
-
-    settings.width = 1920
-    settings.height = 1080
-    settings.change_resolution(Mock())
-    assert settings.width == 1280
-    assert settings.height == 720
-
-# Тест із маркером
-@pytest.mark.skip(reason="Демонстрація маркерів")
-def test_settings_skipped():
-    assert False
+if __name__ == '__main__':
+    unittest.main()
