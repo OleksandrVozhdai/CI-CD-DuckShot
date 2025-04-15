@@ -23,6 +23,7 @@ def dummy_sprite_sheet():
 @pytest.fixture
 def button_setup():
     pygame.init()
+    pygame.mixer.init()
     screen = pygame.display.set_mode((800, 600))
     return screen
 
