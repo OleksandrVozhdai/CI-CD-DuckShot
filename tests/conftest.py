@@ -40,8 +40,8 @@ def button(button_setup, dummy_button_settings):
         x=100, y=100,
         width=200, height=100,
         text="Click Me",
-        image_path="assets/button.png",
-        hover_image_path="assets/button_hover.png",
-        sound_path="assets/click.mp3",
+        image_path="tests/assets/button.png",
+        hover_image_path="tests/assets/button_hover.png",
+        sound_path="tests/assets/click.mp3",
         settings=dummy_button_settings
     )
