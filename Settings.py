@@ -29,7 +29,9 @@ class Settings:
         # Налаштування слайдера гучності
         self.slider_width = self.width // 3  # Ширина слайдера
         self.slider_x_start = (self.width - self.slider_width) // 2
-        self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
+        self.slider_x = self.slider_x_start + int(
+            self.volume * self.slider_width
+        )
         self.slider_dragging = False  # Чи перетягується повзунок
 
         # Завантажуємо налаштування з файлу
@@ -99,7 +101,9 @@ class Settings:
         """Оновлює позицію повзунка відповідно до гучності."""
         self.slider_width = self.width // 3
         self.slider_x_start = (self.width - self.slider_width) // 2
-        self.slider_x = self.slider_x_start + int(self.volume * self.slider_width)
+        self.slider_x = self.slider_x_start + int(
+            self.volume * self.slider_width
+        )
 
     def increase_volume(self):
         """Збільшує гучність, зберігає зміни та оновлює звук."""
@@ -205,7 +209,8 @@ class Settings:
                         screen = self.audio_settings(
                             screen, font, draw_text_with_outline, main_menu)
                         if screen:
-                            self.width, self.height = screen.get_width(), screen.get_height()
+                            self.width = screen.get_width()
+                            self.height = screen.get_height()
                             # Оновлюємо кнопки після зміни розширення
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
@@ -235,7 +240,8 @@ class Settings:
                         screen = self.video_settings(
                             screen, font, draw_text_with_outline, main_menu)
                         if screen:
-                            self.width, self.height = screen.get_width(), screen.get_height()
+                            self.width = screen.get_width()
+                            self.height = screen.get_height()
                             # Оновлюємо кнопки після зміни розширення
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
@@ -436,12 +442,11 @@ class Settings:
                     self.slider_dragging = False
 
                 if event.type == pygame.MOUSEMOTION and self.slider_dragging:
-                    self.slider_x = max(
-                        self.slider_x_start,
-                        min(event.pos[0], self.slider_x_start + self.slider_width)
-                    )
-                    self.volume = (
-                        self.slider_x - self.slider_x_start) / self.slider_width
+                    max_width = self.slider_x_start + self.slider_width
+                    min_x = min(event.pos[0], max_width)
+                    self.slider_x = max(self.slider_x_start, min_x)
+                    delta_x = self.slider_x - self.slider_x_start
+                    self.volume = delta_x / self.slider_width
                     if self.sound_loaded and self.sound:
                         self.sound.set_volume(self.volume)
                     settings_changed = True
@@ -451,10 +456,13 @@ class Settings:
                     if not self.fullscreen:
                         self.width, self.height = event.w, event.h
                         self.slider_width = self.width // 3
-                        self.slider_x_start = (self.width - self.slider_width) / 2
+                        width_diff = self.width - self.slider_width
+                        slider_width_half = width_diff / 2
+                        self.slider_x_start = slider_width_half
                         self.update_slider_position()
                         screen = pygame.display.set_mode(
-                            (self.width, self.height), pygame.RESIZABLE)
+                            (self.width, self.height), pygame.RESIZABLE
+                        )
                         mute_button = ImageButton(
                             (self.width - button_width) / 2,
                             self.height * 0.35,
@@ -575,7 +583,8 @@ class Settings:
                     elif event.key == pygame.K_F11:
                         screen = self.toggle_fullscreen(screen)
                         if screen:
-                            self.width, self.height = screen.get_width(), screen.get_height()
+                            self.width = screen.get_width()
+                            self.height = screen.get_height()
                             self.fade_screen(screen)
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
@@ -609,12 +618,15 @@ class Settings:
                             )
                 if event.type == pygame.VIDEORESIZE:
                     if not self.fullscreen:
-                        self.width, self.height = event.w, event.h
+                        self.width = screen.get_width()
+                        self.height = screen.get_height()
                         self.slider_width = self.width // 3
-                        self.slider_x_start = (self.width - self.slider_width) / 2
+                        width_diff = self.width - self.slider_width
+                        self.slider_x_start = width_diff / 2
                         self.update_slider_position()
                         screen = pygame.display.set_mode(
-                            (self.width, self.height), pygame.RESIZABLE)
+                            (self.width, self.height), pygame.RESIZABLE
+                        )
                         fullscreen_button = ImageButton(
                             (self.width - button_width) / 2,
                             self.height * 0.35,
@@ -647,7 +659,8 @@ class Settings:
                     if resolution_button.rect.collidepoint(event.pos):
                         screen = self.change_resolution(screen)
                         if screen:
-                            self.width, self.height = screen.get_width(), screen.get_height()
+                            self.width = screen.get_width()
+                            self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
                                 self.height * 0.35,
@@ -683,7 +696,8 @@ class Settings:
                     elif fullscreen_button.rect.collidepoint(event.pos):
                         screen = self.toggle_fullscreen(screen)
                         if screen:
-                            self.width, self.height = screen.get_width(), screen.get_height()
+                            self.width = screen.get_width()
+                            self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
                                 self.height * 0.35,
@@ -729,21 +743,35 @@ class Settings:
                         running = False
                         return screen
 
-                for btn in [fullscreen_button, resolution_button, save_button, back_button]:
+                for btn in [
+                    fullscreen_button,
+                    resolution_button,
+                    save_button,
+                    back_button
+                ]:
                     btn.handle_event(event)
 
             # Оновлюємо позиції кнопок
             fullscreen_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.35)
+                (self.width - button_width) / 2, self.height * 0.35
+            )
             resolution_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.45)
+                (self.width - button_width) / 2, self.height * 0.45
+            )
             save_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.55)
+                (self.width - button_width) / 2, self.height * 0.55
+            )
             back_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.65)
+                (self.width - button_width) / 2, self.height * 0.65
+            )
 
             # Відображення кнопок
-            for btn in [fullscreen_button, resolution_button, save_button, back_button]:
+            for btn in [
+                fullscreen_button,
+                resolution_button,
+                save_button,
+                back_button
+            ]:
                 btn.check_hover(pygame.mouse.get_pos())
                 btn.draw(screen)
 
