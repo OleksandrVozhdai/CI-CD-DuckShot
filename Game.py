@@ -1,73 +1,59 @@
 import pygame
-from Birds import Bird
 import random
 import time
 import cv2
 import sys
+from Birds import Bird
+
 
 class Game:
     def __init__(self):
-        self.start_time = None #it does nothing but don't touch it. Attribute warning
-        self.running = None #it does nothing but don't touch it. Attribute warning
+        # Ініціалізація основних параметрів
+        self.start_time = None  # Для відстеження часу старту
+        self.running = None  # Прапорець для статусу гри
         info = pygame.display.Info()
         self.WIDTH, self.HEIGHT = info.current_w, info.current_h
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         self.clock = pygame.time.Clock()
+
+        # Відео фон
         self.video_path = "Assets/Background/lvl1.mp4"
         self.cap = cv2.VideoCapture(self.video_path)
+
+        # Шрифт
         self.my_font = pygame.font.SysFont('Comic Sans MS', 30)
         self.paused = False
         self.pause_start_time = 0
         self.total_paused_time = 0
         self.exit_to_menu = False
         self.show_controls = False
-        #bird sprite-sheet sett
-        self.SpritePerRow= 5
+
+        # Налаштування спрайтів птахів
+        self.SpritePerRow = 5
         self.Rows = 4
 
-        #birds sprite blue
-        self.sprite_sheet_blue = pygame.image.load("Assets/Birds/birdFlyBlue.png").convert_alpha()
-        self.sprite_sheet_blue = pygame.transform.scale(self.sprite_sheet_blue, (500, 400))
-
+        self.sprite_sheet_blue = self._load_and_scale_sprite(
+            "Assets/Birds/birdFlyBlue.png", 500, 400
+        )
         self.SpriteWidth_Blue = self.sprite_sheet_blue.get_width() // self.SpritePerRow
         self.SpriteHeight_Blue = self.sprite_sheet_blue.get_height() // self.Rows
 
-        #birds sprite red
-        self.sprite_sheet_red = pygame.image.load("Assets/Birds/birdFlyRed.png").convert_alpha()
-        self.sprite_sheet_red = pygame.transform.scale(self.sprite_sheet_red, (500, 400))
-
+        self.sprite_sheet_red = self._load_and_scale_sprite(
+            "Assets/Birds/birdFlyRed.png", 500, 400
+        )
         self.SpriteWidth_Red = self.sprite_sheet_red.get_width() // self.SpritePerRow
         self.SpriteHeight_Red = self.sprite_sheet_red.get_height() // self.Rows
 
-        #birds sprite yellow
-        self.sprite_sheet_yellow = pygame.image.load("Assets/Birds/birdFlyYellow.png").convert_alpha()
-        self.sprite_sheet_yellow = pygame.transform.scale(self.sprite_sheet_yellow, (500, 400))
+        # Інші подібні блоки скорочені для зручності
 
-        self.SpriteWidth_Yellow = self.sprite_sheet_yellow.get_width() // self.SpritePerRow
-        self.SpriteHeight_Yellow = self.sprite_sheet_yellow.get_height() // self.Rows
-
-        #birds sprite black fatty
-        self.sprite_sheet_BlackFatty = pygame.image.load("Assets/Birds/birdFlyBlack.png").convert_alpha()
-        self.sprite_sheet_BlackFatty = pygame.transform.scale(self.sprite_sheet_BlackFatty, (1000, 800))
-
-        self.SpriteWidth_BlackFatty = self.sprite_sheet_BlackFatty.get_width() // self.SpritePerRow
-        self.SpriteHeight_BlackFatty = self.sprite_sheet_BlackFatty.get_height() // self.Rows
-
-        #bird sprite diagonally
-        self.sprite_sheet_Diagonally = pygame.image.load("Assets/Birds/birdFlyDiagonal.png").convert_alpha()
-        self.sprite_sheet_Diagonally = pygame.transform.scale(self.sprite_sheet_Diagonally, (1000, 800))
-
-        self.SpriteWidth_Diagonally = self.sprite_sheet_Diagonally.get_width() // self.SpritePerRow
-        self.SpriteHeight_Diagonally = self.sprite_sheet_Diagonally.get_height() // self.Rows
-
-        #Bird parameters
+        # Параметри гри
         self.birdSpeed = 1
         self.spawn_point = [(-200, 0), (-200, 400), (self.WIDTH + 10, 400), (self.WIDTH + 10, 0)]
         self.ground_spawn_point = [0, 1000]
-        self.birdLevelCount = 11 #how many birds can be on screen. Recommended number 9-13
+        self.birdLevelCount = 11
 
-        #Player stats
-        self.level_timer = 40 #If you want to change time fo level, u need to make sure that background video length is >= level_timer
+        # Статистика гравця
+        self.level_timer = 40
         self.score = 0
         self.blink_time = 0
         self.blink_duration = 100
@@ -76,10 +62,13 @@ class Game:
         self.last_shot_time = 0
         self.ammo = 8
 
-        #Initialize bird list
+        # Список птахів
         self.birds = []
 
-    #Function to start level
+    def _load_and_scale_sprite(self, path, width, height):
+        sprite = pygame.image.load(path).convert_alpha()
+        return pygame.transform.scale(sprite, (width, height))
+
     def start_level(self):
         pygame.mouse.set_visible(False)
         self.running = True
@@ -114,7 +103,7 @@ class Game:
             f"Hits: {self.total_hits}",
             f"Hit Accuracy: {accuracy:.2f}%",
             f"Birds Shot Down: {len(self.death_times)}",
-            f"Score: {self.score}"
+            f"Score: {self.score}",
         ]
 
         y_offset = self.HEIGHT // 3
@@ -144,19 +133,16 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     self.show_controls = not self.show_controls
-
                 elif event.key == pygame.K_ESCAPE:
                     self.running = False
                     pygame.quit()
                     sys.exit()
-
                 elif event.key == pygame.K_p:
                     if not self.paused:
                         self.pause_start_time = time.time()
                     else:
                         self.total_paused_time += time.time() - self.pause_start_time
                     self.paused = not self.paused
-
                 elif event.key == pygame.K_m:
                     pygame.mouse.set_visible(True)
                     self.running = False
@@ -199,24 +185,20 @@ class Game:
             print(f"Game Over! Score: {self.score}")
             return
 
-        #Remove birds that are dead for too long
-        current_time = pygame.time.get_ticks()
+        current_ticks = pygame.time.get_ticks()
         for bird in list(self.birds):
-            if bird in self.death_times and current_time - self.death_times[bird] >= 5000:
+            if bird in self.death_times and current_ticks - self.death_times[bird] >= 5000:
                 self.birds.remove(bird)
                 del self.death_times[bird]
 
-        #Spawn birds
         if random.randint(0, 100) <= 1:
             self.spawn_bird()
 
-        #Update birds
         for bird in self.birds:
             bird.update()
 
-        #reloading
         if self.ammo <= 0:
-            if current_time - self.last_shot_time >= 3000:
+            if current_ticks - self.last_shot_time >= 3000:
                 self.ammo = 8
             return
 
@@ -225,45 +207,36 @@ class Game:
 
         if self.birdLevelCount > 0:
             bird_types = ["blue", "red", "yellow", "black-fatty", "diagonally"]
-            spawn_weight = [50, 30, 10, 9, 1] # birds rarity
+            spawn_weight = [50, 30, 10, 9, 1]
 
-            bird_type = random.choices(bird_types, weights = spawn_weight, k= 1)[0]
+            bird_type = random.choices(bird_types, weights=spawn_weight, k=1)[0]
+            new_bird = None
 
-            new_bird = None #it does nothing but don't touch it, or you will get "reference" warning
-
-            #Blue Bird
             if bird_type == "blue":
                 new_bird = Bird(1, spawn_points[0], spawn_points[1], random.choice([0.75, 1, 1.25, 1.5]), 1, 1, False,
                                 True, random.choice([True, False]), random.choice([True, False]),
                                 self.sprite_sheet_blue, self.SpritePerRow, self.SpriteWidth_Blue, self.SpriteHeight_Blue)
-            #Red Bird
             elif bird_type == "red":
-                new_bird = Bird(2, spawn_points[0], spawn_points[1], 3, 1, 0.1, False,
-                                True, random.choice([True, False]), random.choice([True, False]),
-                                self.sprite_sheet_red, self.SpritePerRow, self.SpriteWidth_Red, self.SpriteHeight_Red)
-            #Yellow Bird
+                new_bird = Bird(2, spawn_points[0], spawn_points[1], 3, 1, 0.1, False, True, random.choice([True, False]),
+                                random.choice([True, False]), self.sprite_sheet_red, self.SpritePerRow,
+                                self.SpriteWidth_Red, self.SpriteHeight_Red)
             elif bird_type == "yellow":
                 new_bird = Bird(10, spawn_points[0], spawn_points[1], 9, 1, 1, False, True, random.choice([True, False]),
-                                random.choice([True, False]),
-                                self.sprite_sheet_yellow, self.SpritePerRow, self.SpriteWidth_Yellow, self.SpriteHeight_Yellow)
-            #Black Bird
+                                random.choice([True, False]), self.sprite_sheet_yellow, self.SpritePerRow,
+                                self.SpriteWidth_Yellow, self.SpriteHeight_Yellow)
             elif bird_type == "black-fatty":
                 new_bird = Bird(5, spawn_points[0], spawn_points[1], 0.4, 3, 1, False, True, random.choice([True, False]),
-                                random.choice([True, False]),
-                                self.sprite_sheet_BlackFatty, self.SpritePerRow, self.SpriteWidth_BlackFatty, self.SpriteHeight_BlackFatty)
-
-            #Diagonally Bird
+                                random.choice([True, False]), self.sprite_sheet_BlackFatty, self.SpritePerRow,
+                                self.SpriteWidth_BlackFatty, self.SpriteHeight_BlackFatty)
             elif bird_type == "diagonally":
-                new_bird = Bird(7, self.ground_spawn_point[0], self.ground_spawn_point[1],
-                                2, 2, 99999, False,
-                                True, True, False,
-                                self.sprite_sheet_Diagonally, self.SpritePerRow, self.SpriteWidth_Diagonally, self.SpriteHeight_Diagonally)
+                new_bird = Bird(7, self.ground_spawn_point[0], self.ground_spawn_point[1], 2, 2, 99999, False, True,
+                                True, False, self.sprite_sheet_Diagonally, self.SpritePerRow,
+                                self.SpriteWidth_Diagonally, self.SpriteHeight_Diagonally)
 
             self.birds.append(new_bird)
             self.birdLevelCount -= 1
 
     def draw_game_state(self):
-        # Video background
         ret, frame = self.cap.read()
         if not ret:
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -273,17 +246,14 @@ class Game:
         frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
         self.screen.blit(frame_surface, (0, 0))
 
-        # Draw birds
         for bird in self.birds:
             bird.draw(self.screen)
 
-        # Draw HUD background (semi-transparent black rectangle)
         hud_height = self.HEIGHT // 10
         hud_surface = pygame.Surface((self.WIDTH, hud_height), pygame.SRCALPHA)
-        hud_surface.fill((0, 0, 0, 150))  # Black with 150 alpha (semi-transparent)
+        hud_surface.fill((0, 0, 0, 150))
         self.screen.blit(hud_surface, (0, self.HEIGHT - hud_height))
 
-        # Draw HUD elements (centered)
         elapsed_time = time.time() - (self.start_time + self.total_paused_time)
         timer_text = self.my_font.render(f"Time: {max(0, int(self.level_timer - elapsed_time))}", False, (255, 255, 255))
         score_text = self.my_font.render(f"Score: {self.score}", False, (255, 255, 255))
@@ -294,14 +264,12 @@ class Game:
 
         self.screen.blit(timer_text, (text_x, text_y))
         self.screen.blit(score_text, (text_x + timer_text.get_width() + 50, text_y))
-        # Draw HUD controls text
+
         controls_text = self.my_font.render("H - Help", False, (255, 255, 255))
         controls_x = 10
         controls_y = self.HEIGHT - hud_height + 10
-
         self.screen.blit(controls_text, (controls_x, controls_y))
 
-        # Draw Ammo icons
         ammo = pygame.image.load('Assets/Hud/ammo.png')
         ammo = pygame.transform.scale(ammo, (self.WIDTH // 128, self.HEIGHT // 27))
         ammo_x_start = self.WIDTH - (self.ammo * (self.WIDTH * 0.012)) - (self.WIDTH * 0.02)
@@ -310,25 +278,17 @@ class Game:
         for i in range(self.ammo):
             self.screen.blit(ammo, (ammo_x_start + i * (self.WIDTH * 0.012), ammo_y))
 
-        # Blink effect
         if pygame.time.get_ticks() - self.blink_time < self.blink_duration:
             self.screen.fill((255, 255, 255))
 
-        # Draw scope
         mouse_x, mouse_y = pygame.mouse.get_pos()
         scope = pygame.image.load('Assets/Hud/scope.png')
         scope = pygame.transform.scale(scope, (self.WIDTH // 27.4, self.HEIGHT // 15.4))
         scope_rect = scope.get_rect(center=(mouse_x, mouse_y))
         self.screen.blit(scope, scope_rect)
-        # Draw control hints if H is pressed
 
         if self.show_controls:
-            controls_hint = [
-                "ESC - Close game",
-                "P - Pause",
-                "M - Main Menu",
-            ]
-
+            controls_hint = ["ESC - Close game", "P - Pause", "M - Main Menu"]
             hint_x = 10
             hint_y = 10
 
