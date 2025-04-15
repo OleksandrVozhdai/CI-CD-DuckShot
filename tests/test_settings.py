@@ -51,14 +51,12 @@ class TestSettings(unittest.TestCase):
         flags = self.screen.get_flags()
         self.assertFalse(flags & pygame.FULLSCREEN)
 
-    @patch("pygame.mixer.music.set_volume")  # Мокаємо функцію set_volume
-    @patch("pygame.mixer.music.get_volume", return_value=0.8)  # Мокаємо get_volume
-    def test_volume_change(self, mock_get_volume, mock_set_volume):
-        # Зміна гучності
+    @patch("pygame.mixer.init")
+    @patch("pygame.mixer.music.set_volume")
+    @patch("pygame.mixer.music.get_volume", return_value=0.8)
+    def test_volume_change(self, mock_get_volume, mock_set_volume, mock_mixer_init):
+        mock_mixer_init.return_value = None
         self.settings.volume = 0.8
-        pygame.mixer.init()
         pygame.mixer.music.set_volume(self.settings.volume)
-        # Перевірка, чи функція була викликана з правильним значенням
         mock_set_volume.assert_called_with(0.8)
-        # Перевірка, чи повернутий правильний об'єм
         self.assertEqual(mock_get_volume(), 0.8)
