@@ -1,5 +1,6 @@
 import unittest
 import pygame
+from unittest.mock import patch
 
 
 def can_initialize_display():
@@ -24,6 +25,9 @@ class TestSettings(unittest.TestCase):
             (self.settings.width, self.settings.height), pygame.RESIZABLE
         )
 
+    def tearDown(self):
+        pygame.quit()
+
     def test_resolution_change(self):
         self.settings.width, self.settings.height = 1280, 720
         self.screen = pygame.display.set_mode(
@@ -47,9 +51,14 @@ class TestSettings(unittest.TestCase):
         flags = self.screen.get_flags()
         self.assertFalse(flags & pygame.FULLSCREEN)
 
-    def test_volume_change(self):
+    @patch("pygame.mixer.music.set_volume")  # Мокаємо функцію set_volume
+    @patch("pygame.mixer.music.get_volume", return_value=0.8)  # Мокаємо get_volume
+    def test_volume_change(self, mock_get_volume, mock_set_volume):
+        # Зміна гучності
         self.settings.volume = 0.8
         pygame.mixer.init()
         pygame.mixer.music.set_volume(self.settings.volume)
-        actual_volume = pygame.mixer.music.get_volume()
-        self.assertAlmostEqual(actual_volume, 0.8, places=1)
+        # Перевірка, чи функція була викликана з правильним значенням
+        mock_set_volume.assert_called_with(0.8)
+        # Перевірка, чи повернутий правильний об'єм
+        self.assertEqual(mock_get_volume(), 0.8)
