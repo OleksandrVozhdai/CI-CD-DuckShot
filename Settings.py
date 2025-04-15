@@ -8,7 +8,6 @@ from Button import ImageButton
 # Ініціалізація мікшера Pygame
 pygame.mixer.init()
 
-
 class Settings:
     def __init__(self, width, height, cap):
         """Ініціалізація налаштувань."""
@@ -25,6 +24,7 @@ class Settings:
         self.fullscreen = False  # Повноекранний режим (вимкнено)
         self.cap = cap  # Відеопотік
         self.sound_enabled = True  # Звук увімкнено
+        self.music_playing = False  # Флаг для отслеживания состояния музыки
 
         # Налаштування слайдера гучності
         self.slider_width = self.width // 3  # Ширина слайдера
@@ -57,6 +57,12 @@ class Settings:
         # Прапорець для відображення повідомлення про збереження
         self.settings_saved = False
 
+        # Шлях до фонової музики
+        self.music_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "Assets", "Sounds", "main_theme.mp3"
+        )
+
     def save_settings(self):
         """Зберігає поточні налаштування у файл."""
         try:
@@ -79,11 +85,13 @@ class Settings:
             try:
                 with open(self.SETTINGS_FILE, "r") as file:
                     data = json.load(file)
-                    self.volume = data.get("volume", 0.5)
+                    self.volume = min(1.0, max(0.0, data.get("volume", 0.5)))  # Ограничиваем диапазон
                     self.width = data.get(
-                        "width", pygame.display.Info().current_w)
+                        "width", pygame.display.Info().current_w
+                    )
                     self.height = data.get(
-                        "height", pygame.display.Info().current_h)
+                        "height", pygame.display.Info().current_h
+                    )
                     self.fullscreen = data.get("fullscreen", False)
                     print(
                         f"🔄 Завантажено гучність: {self.volume * 100}%, "
@@ -91,8 +99,10 @@ class Settings:
                         f"Повноекранний режим: {self.fullscreen}"
                     )
             except json.JSONDecodeError:
-                print("⚠️ Помилка завантаження налаштувань! Використовуються "
-                      "значення за замовчуванням.")
+                print(
+                    "⚠️ Помилка завантаження налаштувань! Використовуються "
+                    "значення за замовчуванням."
+                )
         else:
             print("⚠️ Файл налаштувань відсутній. Створюємо новий...")
             self.save_settings()
@@ -112,6 +122,7 @@ class Settings:
         self.save_settings()
         if self.sound_loaded and self.sound:
             self.sound.set_volume(self.volume)
+        pygame.mixer.music.set_volume(self.volume)
 
     def decrease_volume(self):
         """Зменшує гучність, зберігає зміни та оновлює звук."""
@@ -120,6 +131,7 @@ class Settings:
         self.save_settings()
         if self.sound_loaded and self.sound:
             self.sound.set_volume(self.volume)
+        pygame.mixer.music.set_volume(self.volume)
 
     def get_volume(self):
         """Повертає поточний рівень гучності."""
@@ -135,33 +147,42 @@ class Settings:
             pygame.display.flip()
             pygame.time.delay(10)
 
+    def load_and_play_music(self):
+        """Завантажує і відтворює фонову музику."""
+        if not self.music_playing and os.path.exists(self.music_path):
+            pygame.mixer.music.load(self.music_path)
+            pygame.mixer.music.set_volume(self.volume)
+            pygame.mixer.music.play(-1)  # Зациклене відтворення
+            self.music_playing = True
+            print("🎵 Музика відтворюється")
+        elif not os.path.exists(self.music_path):
+            print(f"Попередження: Файл {self.music_path} не знайдено.")
+            print("Музика не відтворюватиметься.")
+
     def settings_menu(self, screen, font, draw_text_with_outline, main_menu):
         """Відображає меню налаштувань."""
-        # Зупиняємо будь-яку фонову музику
-        pygame.mixer.music.stop()
+        # Завантажуємо і відтворюємо музику
+        self.load_and_play_music()
 
         # Ініціалізація кнопок для меню налаштувань
         button_width, button_height = 252, 74
         audio_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.35,
-            button_width, button_height, "",
-            "Assets/Buttons/audio_button.png",
-            "Assets/Buttons/audio_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.35,
+            button_width, button_height, "", "Assets/Buttons/audio_button.png",
+            "Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
         video_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.45,
-            button_width, button_height, "",
-            "Assets/Buttons/video_button.png",
-            "Assets/Buttons/video_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.45,
+            button_width, button_height, "", "Assets/Buttons/video_button.png",
+            "Assets/Buttons/video_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.55,
-            button_width, button_height, "",
-            "Assets/Buttons/exit_button.png",
-            "Assets/Buttons/exit_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.55,
+            button_width, button_height, "", "Assets/Buttons/exit_button.png",
+            "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
 
         running = True
@@ -178,7 +199,8 @@ class Settings:
                         interpolation=cv2.INTER_AREA
                     )
                     frame_surface = pygame.surfarray.make_surface(
-                        frame.swapaxes(0, 1))
+                        frame.swapaxes(0, 1)
+                    )
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
                 print(f"Помилка при обробці відео: {e}")
@@ -201,72 +223,66 @@ class Settings:
                         self.fade_screen(screen)
                         running = False
                         return screen
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if audio_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
+                if event.type == pygame.USEREVENT:
+                    if event.button == audio_button:
                         self.fade_screen(screen)
                         screen = self.audio_settings(
-                            screen, font, draw_text_with_outline, main_menu)
+                            screen, font, draw_text_with_outline, main_menu
+                        )
                         if screen:
                             self.width = screen.get_width()
                             self.height = screen.get_height()
-                            # Оновлюємо кнопки після зміни розширення
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35,
-                                button_width, button_height, "",
-                                "Assets/Buttons/audio_button.png",
-                                "Assets/Buttons/audio_button_hover.png", ""
+                                self.height * 0.35, button_width, button_height,
+                                "", "Assets/Buttons/audio_button.png",
+                                "Assets/Buttons/audio_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             video_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45,
-                                button_width, button_height, "",
-                                "Assets/Buttons/video_button.png",
-                                "Assets/Buttons/video_button_hover.png", ""
+                                self.height * 0.45, button_width, button_height,
+                                "", "Assets/Buttons/video_button.png",
+                                "Assets/Buttons/video_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55,
-                                button_width, button_height, "",
-                                "Assets/Buttons/exit_button.png",
-                                "Assets/Buttons/exit_button_hover.png", ""
+                                self.height * 0.55, button_width, button_height,
+                                "", "Assets/Buttons/exit_button.png",
+                                "Assets/Buttons/exit_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
-                    elif video_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
+                    elif event.button == video_button:
                         self.fade_screen(screen)
                         screen = self.video_settings(
-                            screen, font, draw_text_with_outline, main_menu)
+                            screen, font, draw_text_with_outline, main_menu
+                        )
                         if screen:
                             self.width = screen.get_width()
                             self.height = screen.get_height()
-                            # Оновлюємо кнопки після зміни розширення
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35,
-                                button_width, button_height, "",
-                                "Assets/Buttons/audio_button.png",
-                                "Assets/Buttons/audio_button_hover.png", ""
+                                self.height * 0.35, button_width, button_height,
+                                "", "Assets/Buttons/audio_button.png",
+                                "Assets/Buttons/audio_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             video_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45,
-                                button_width, button_height, "",
-                                "Assets/Buttons/video_button.png",
-                                "Assets/Buttons/video_button_hover.png", ""
+                                self.height * 0.45, button_width, button_height,
+                                "", "Assets/Buttons/video_button.png",
+                                "Assets/Buttons/video_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55,
-                                button_width, button_height, "",
-                                "Assets/Buttons/exit_button.png",
-                                "Assets/Buttons/exit_button_hover.png", ""
+                                self.height * 0.55, button_width, button_height,
+                                "", "Assets/Buttons/exit_button.png",
+                                "Assets/Buttons/exit_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
-                    elif back_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
+                    elif event.button == back_button:
                         self.fade_screen(screen)
                         running = False
                         return screen
@@ -277,11 +293,14 @@ class Settings:
 
             # Оновлюємо позиції кнопок
             audio_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.35)
+                (self.width - button_width) / 2, self.height * 0.35
+            )
             video_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.45)
+                (self.width - button_width) / 2, self.height * 0.45
+            )
             back_button.rect.topleft = (
-                (self.width - button_width) / 2, self.height * 0.55)
+                (self.width - button_width) / 2, self.height * 0.55
+            )
 
             # Відображення кнопок
             buttons = [audio_button, video_button, back_button]
@@ -295,27 +314,27 @@ class Settings:
 
     def audio_settings(self, screen, font, draw_text_with_outline, main_menu):
         """Відображає меню аудіо налаштувань."""
+        # Завантажуємо і відтворюємо музику
+        self.load_and_play_music()
+
         button_width, button_height = 252, 74
         mute_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.35,
-            button_width, button_height, "",
-            "Assets/Buttons/mute_button.png",
-            "Assets/Buttons/mute_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.35,
+            button_width, button_height, "", "Assets/Buttons/mute_button.png",
+            "Assets/Buttons/mute_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
         save_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.45,
-            button_width, button_height, "",
-            "Assets/Buttons/save_button.png",
-            "Assets/Buttons/save_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.45,
+            button_width, button_height, "", "Assets/Buttons/save_button.png",
+            "Assets/Buttons/save_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.55,
-            button_width, button_height, "",
-            "Assets/Buttons/back_button.png",
-            "Assets/Buttons/back_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.55,
+            button_width, button_height, "", "Assets/Buttons/back_button.png",
+            "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
 
         running = True
@@ -336,7 +355,8 @@ class Settings:
                         interpolation=cv2.INTER_AREA
                     )
                     frame_surface = pygame.surfarray.make_surface(
-                        frame.swapaxes(0, 1))
+                        frame.swapaxes(0, 1)
+                    )
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
                 print(f"Помилка при обробці відео: {e}")
@@ -388,6 +408,7 @@ class Settings:
                             self.update_slider_position()
                             if self.sound_loaded and self.sound:
                                 self.sound.set_volume(self.volume)
+                            pygame.mixer.music.set_volume(self.volume)
                         self.fade_screen(screen)
                         running = False
                         return screen
@@ -398,6 +419,7 @@ class Settings:
                             self.slider_x = self.slider_x_start
                             if self.sound_loaded and self.sound:
                                 self.sound.set_volume(0.0)
+                            pygame.mixer.music.set_volume(0.0)
                             settings_changed = True
                             self.settings_saved = False
 
@@ -413,17 +435,14 @@ class Settings:
                             self.slider_x = self.slider_x_start
                             if self.sound_loaded and self.sound:
                                 self.sound.set_volume(0.0)
+                            pygame.mixer.music.set_volume(0.0)
                             settings_changed = True
                             self.settings_saved = False
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
                         self.fade_screen(screen)
                     elif save_button.rect.collidepoint(event.pos):
                         self.save_settings()
                         previous_volume = self.volume
                         settings_changed = False
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
                         self.fade_screen(screen)
                         print("✅ Налаштування збережено!")
                     elif back_button.rect.collidepoint(event.pos):
@@ -432,8 +451,7 @@ class Settings:
                             self.update_slider_position()
                             if self.sound_loaded and self.sound:
                                 self.sound.set_volume(self.volume)
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
+                            pygame.mixer.music.set_volume(self.volume)
                         self.fade_screen(screen)
                         running = False
                         return screen
@@ -449,6 +467,7 @@ class Settings:
                     self.volume = delta_x / self.slider_width
                     if self.sound_loaded and self.sound:
                         self.sound.set_volume(self.volume)
+                    pygame.mixer.music.set_volume(self.volume)
                     settings_changed = True
                     self.settings_saved = False
 
@@ -464,25 +483,25 @@ class Settings:
                             (self.width, self.height), pygame.RESIZABLE
                         )
                         mute_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.35,
+                            (self.width - button_width) / 2, self.height * 0.35,
                             button_width, button_height, "",
                             "Assets/Buttons/mute_button.png",
-                            "Assets/Buttons/mute_button_hover.png", ""
+                            "Assets/Buttons/mute_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
                         save_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.45,
+                            (self.width - button_width) / 2, self.height * 0.45,
                             button_width, button_height, "",
                             "Assets/Buttons/save_button.png",
-                            "Assets/Buttons/save_button_hover.png", ""
+                            "Assets/Buttons/save_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
                         back_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.55,
+                            (self.width - button_width) / 2, self.height * 0.55,
                             button_width, button_height, "",
                             "Assets/Buttons/back_button.png",
-                            "Assets/Buttons/back_button_hover.png", ""
+                            "Assets/Buttons/back_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
 
                 mute_button.handle_event(event)
@@ -503,34 +522,35 @@ class Settings:
 
     def video_settings(self, screen, font, draw_text_with_outline, main_menu):
         """Відображає меню відео налаштувань."""
+        # Завантажуємо і відтворюємо музику
+        self.load_and_play_music()
+
         button_width, button_height = 252, 74
         fullscreen_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.35,
+            (self.width - button_width) / 2, self.height * 0.35,
             button_width, button_height, "",
             "Assets/Buttons/fullscreen_button.png",
-            "Assets/Buttons/fullscreen_button_hover.png", ""
+            "Assets/Buttons/fullscreen_button_hover.png",
+            "Assets/Sounds/click.mp3", self
         )
         resolution_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.45,
+            (self.width - button_width) / 2, self.height * 0.45,
             button_width, button_height, "",
             "Assets/Buttons/resolution_button.png",
-            "Assets/Buttons/resolution_button_hover.png", ""
+            "Assets/Buttons/resolution_button_hover.png",
+            "Assets/Sounds/click.mp3", self
         )
         save_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.55,
-            button_width, button_height, "",
-            "Assets/Buttons/save_button.png",
-            "Assets/Buttons/save_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.55,
+            button_width, button_height, "", "Assets/Buttons/save_button.png",
+            "Assets/Buttons/save_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2,
-            self.height * 0.65,
-            button_width, button_height, "",
-            "Assets/Buttons/back_button.png",
-            "Assets/Buttons/back_button_hover.png", ""
+            (self.width - button_width) / 2, self.height * 0.65,
+            button_width, button_height, "", "Assets/Buttons/back_button.png",
+            "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3",
+            self
         )
 
         running = True
@@ -547,7 +567,8 @@ class Settings:
                         interpolation=cv2.INTER_AREA
                     )
                     frame_surface = pygame.surfarray.make_surface(
-                        frame.swapaxes(0, 1))
+                        frame.swapaxes(0, 1)
+                    )
                     screen.blit(frame_surface, (0, 0))
             except Exception as e:
                 print(f"Помилка при обробці відео: {e}")
@@ -563,7 +584,8 @@ class Settings:
                 (255, 255, 255), (0, 0, 0), self.width / 2, self.height * 0.2
             )
             fullscreen_text = (
-                "Fullscreen: ON" if self.fullscreen else "Fullscreen: OFF")
+                "Fullscreen: ON" if self.fullscreen else "Fullscreen: OFF"
+            )
             draw_text_with_outline(
                 fullscreen_text, font, (255, 255, 255), (0, 0, 0),
                 self.width / 2, self.height * 0.3
@@ -588,33 +610,31 @@ class Settings:
                             self.fade_screen(screen)
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35,
-                                button_width, button_height, "",
-                                "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35, button_width, button_height,
+                                "", "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45,
-                                button_width, button_height, "",
-                                "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45, button_width, button_height,
+                                "", "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55,
-                                button_width, button_height, "",
-                                "Assets/Buttons/save_button.png",
-                                "Assets/Buttons/save_button_hover.png", ""
+                                self.height * 0.55, button_width, button_height,
+                                "", "Assets/Buttons/save_button.png",
+                                "Assets/Buttons/save_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65,
-                                button_width, button_height, "",
-                                "Assets/Buttons/back_button.png",
-                                "Assets/Buttons/back_button_hover.png", ""
+                                self.height * 0.65, button_width, button_height,
+                                "", "Assets/Buttons/back_button.png",
+                                "Assets/Buttons/back_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                 if event.type == pygame.VIDEORESIZE:
                     if not self.fullscreen:
@@ -628,125 +648,111 @@ class Settings:
                             (self.width, self.height), pygame.RESIZABLE
                         )
                         fullscreen_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.35,
+                            (self.width - button_width) / 2, self.height * 0.35,
                             button_width, button_height, "",
                             "Assets/Buttons/fullscreen_button.png",
-                            "Assets/Buttons/fullscreen_button_hover.png", ""
+                            "Assets/Buttons/fullscreen_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
                         resolution_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.45,
+                            (self.width - button_width) / 2, self.height * 0.45,
                             button_width, button_height, "",
                             "Assets/Buttons/resolution_button.png",
-                            "Assets/Buttons/resolution_button_hover.png", ""
+                            "Assets/Buttons/resolution_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
                         save_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.55,
+                            (self.width - button_width) / 2, self.height * 0.55,
                             button_width, button_height, "",
                             "Assets/Buttons/save_button.png",
-                            "Assets/Buttons/save_button_hover.png", ""
+                            "Assets/Buttons/save_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
                         back_button = ImageButton(
-                            (self.width - button_width) / 2,
-                            self.height * 0.65,
+                            (self.width - button_width) / 2, self.height * 0.65,
                             button_width, button_height, "",
                             "Assets/Buttons/back_button.png",
-                            "Assets/Buttons/back_button_hover.png", ""
+                            "Assets/Buttons/back_button_hover.png",
+                            "Assets/Sounds/click.mp3", self
                         )
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if resolution_button.rect.collidepoint(event.pos):
+                if event.type == pygame.USEREVENT:
+                    if event.button == resolution_button:
                         screen = self.change_resolution(screen)
                         if screen:
                             self.width = screen.get_width()
                             self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35,
-                                button_width, button_height, "",
-                                "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35, button_width, button_height,
+                                "", "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45,
-                                button_width, button_height, "",
-                                "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45, button_width, button_height,
+                                "", "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55,
-                                button_width, button_height, "",
-                                "Assets/Buttons/save_button.png",
-                                "Assets/Buttons/save_button_hover.png", ""
+                                self.height * 0.55, button_width, button_height,
+                                "", "Assets/Buttons/save_button.png",
+                                "Assets/Buttons/save_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65,
-                                button_width, button_height, "",
-                                "Assets/Buttons/back_button.png",
-                                "Assets/Buttons/back_button_hover.png", ""
+                                self.height * 0.65, button_width, button_height,
+                                "", "Assets/Buttons/back_button.png",
+                                "Assets/Buttons/back_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
-                    elif fullscreen_button.rect.collidepoint(event.pos):
+                    elif event.button == fullscreen_button:
                         screen = self.toggle_fullscreen(screen)
                         if screen:
                             self.width = screen.get_width()
                             self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35,
-                                button_width, button_height, "",
-                                "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35, button_width, button_height,
+                                "", "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45,
-                                button_width, button_height, "",
-                                "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45, button_width, button_height,
+                                "", "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                ""
+                                "Assets/Sounds/click.mp3", self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55,
-                                button_width, button_height, "",
-                                "Assets/Buttons/save_button.png",
-                                "Assets/Buttons/save_button_hover.png", ""
+                                self.height * 0.55, button_width, button_height,
+                                "", "Assets/Buttons/save_button.png",
+                                "Assets/Buttons/save_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65,
-                                button_width, button_height, "",
-                                "Assets/Buttons/back_button.png",
-                                "Assets/Buttons/back_button_hover.png", ""
+                                self.height * 0.65, button_width, button_height,
+                                "", "Assets/Buttons/back_button.png",
+                                "Assets/Buttons/back_button_hover.png",
+                                "Assets/Sounds/click.mp3", self
                             )
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
-                    elif save_button.rect.collidepoint(event.pos):
+                    elif event.button == save_button:
                         self.save_settings()
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
                         self.fade_screen(screen)
                         print("✅ Налаштування відео збережено!")
-                    elif back_button.rect.collidepoint(event.pos):
-                        if self.sound_loaded and self.sound:
-                            self.sound.play()
+                    elif event.button == back_button:
                         self.fade_screen(screen)
                         running = False
                         return screen
 
                 for btn in [
-                    fullscreen_button,
-                    resolution_button,
-                    save_button,
+                    fullscreen_button, resolution_button, save_button,
                     back_button
                 ]:
                     btn.handle_event(event)
@@ -767,10 +773,7 @@ class Settings:
 
             # Відображення кнопок
             for btn in [
-                fullscreen_button,
-                resolution_button,
-                save_button,
-                back_button
+                fullscreen_button, resolution_button, save_button, back_button
             ]:
                 btn.check_hover(pygame.mouse.get_pos())
                 btn.draw(screen)
@@ -787,21 +790,25 @@ class Settings:
                            (1280, 720), (1024, 768)]
             if (self.width, self.height) in resolutions:
                 screen = pygame.display.set_mode(
-                    (self.width, self.height), pygame.FULLSCREEN)
+                    (self.width, self.height), pygame.FULLSCREEN
+                )
             else:
                 info = pygame.display.Info()
                 self.width, self.height = info.current_w, info.current_h
                 screen = pygame.display.set_mode(
-                    (self.width, self.height), pygame.FULLSCREEN)
+                    (self.width, self.height), pygame.FULLSCREEN
+                )
         else:
             screen = pygame.display.set_mode(
-                (self.width, self.height), pygame.RESIZABLE)
+                (self.width, self.height), pygame.RESIZABLE
+            )
             info = pygame.display.Info()
             if self.width > info.current_w or self.height > info.current_h:
                 self.width = min(self.width, info.current_w)
                 self.height = min(self.height, info.current_h)
                 screen = pygame.display.set_mode(
-                    (self.width, self.height), pygame.RESIZABLE)
+                    (self.width, self.height), pygame.RESIZABLE
+                )
         self.slider_width = self.width // 3
         self.slider_x_start = (self.width - self.slider_width) / 2
         self.update_slider_position()
@@ -822,16 +829,19 @@ class Settings:
         self.update_slider_position()
         if self.fullscreen:
             screen = pygame.display.set_mode(
-                (self.width, self.height), pygame.FULLSCREEN)
+                (self.width, self.height), pygame.FULLSCREEN
+            )
         else:
             screen = pygame.display.set_mode(
-                (self.width, self.height), pygame.RESIZABLE)
+                (self.width, self.height), pygame.RESIZABLE
+            )
             info = pygame.display.Info()
             if self.width > info.current_w or self.height > info.current_h:
                 self.width = min(self.width, info.current_w)
                 self.height = min(self.height, info.current_h)
                 screen = pygame.display.set_mode(
-                    (self.width, self.height), pygame.RESIZABLE)
+                    (self.width, self.height), pygame.RESIZABLE
+                )
         self.save_settings()
         print(
             f"🔄 Змінено роздільну здатність на: {new_resolution[0]}x"
