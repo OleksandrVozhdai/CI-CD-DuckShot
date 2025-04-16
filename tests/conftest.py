@@ -5,6 +5,8 @@ import pytest
 import sys
 import os
 from unittest.mock import Mock, patch
+from unittest import mock
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..')))
@@ -64,11 +66,12 @@ def dummy_screen():
 
 @pytest.fixture
 def game_instance(dummy_screen):
-    return Game(
-        fullscreen=False,
-        screen=dummy_screen,
-        bird_speed=0,
-        birdLevelCount=5,
-        levelType=1,
-        ammoLevel=0
-    )
+    with mock.patch("pygame.mixer.init"), mock.patch("pygame.mixer.Sound"):
+        return Game(
+            fullscreen=False,
+            screen=dummy_screen,
+            bird_speed=0,
+            birdLevelCount=5,
+            levelType=1,
+            ammoLevel=0
+        )
