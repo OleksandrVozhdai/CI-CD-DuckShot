@@ -6,9 +6,9 @@ import cv2
 import sys
 
 class Game:
-    pygame.mixer.init()
     def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None, bird_speed = None, birdLevelCount = None,
                  levelType = None, ammoLevel = None):
+        pygame.mixer.init()
         self.start_time = None #it does nothing but don't touch it. Attribute warning
         self.running = None #it does nothing but don't touch it. Attribute warning
         info = pygame.display.Info()
