@@ -8,6 +8,7 @@ from Button import ImageButton
 # Ініціалізація мікшера Pygame
 pygame.mixer.init()
 
+
 class Settings:
     def __init__(self, width, height, cap):
         """Ініціалізація налаштувань."""
@@ -85,7 +86,8 @@ class Settings:
             try:
                 with open(self.SETTINGS_FILE, "r") as file:
                     data = json.load(file)
-                    self.volume = min(1.0, max(0.0, data.get("volume", 0.5)))  # Ограничиваем диапазон
+                    self.volume = min(1.0, max(0.0, data.get(
+                        "volume", 0.5)))  # Обмежуємо діапазон
                     self.width = data.get(
                         "width", pygame.display.Info().current_w
                     )
@@ -167,21 +169,36 @@ class Settings:
         # Ініціалізація кнопок для меню налаштувань
         button_width, button_height = 252, 74
         audio_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.35,
-            button_width, button_height, "", "Assets/Buttons/audio_button.png",
-            "Assets/Buttons/audio_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.35,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/audio_button.png",
+            "Assets/Buttons/audio_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
         video_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.45,
-            button_width, button_height, "", "Assets/Buttons/video_button.png",
-            "Assets/Buttons/video_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.45,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/video_button.png",
+            "Assets/Buttons/video_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.55,
-            button_width, button_height, "", "Assets/Buttons/exit_button.png",
-            "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.55,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/exit_button.png",
+            "Assets/Buttons/exit_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
 
@@ -234,24 +251,36 @@ class Settings:
                             self.height = screen.get_height()
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35, button_width, button_height,
-                                "", "Assets/Buttons/audio_button.png",
+                                self.height * 0.35,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/audio_button.png",
                                 "Assets/Buttons/audio_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             video_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45, button_width, button_height,
-                                "", "Assets/Buttons/video_button.png",
+                                self.height * 0.45,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/video_button.png",
                                 "Assets/Buttons/video_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55, button_width, button_height,
-                                "", "Assets/Buttons/exit_button.png",
+                                self.height * 0.55,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/exit_button.png",
                                 "Assets/Buttons/exit_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                     elif event.button == video_button:
                         self.fade_screen(screen)
@@ -263,24 +292,36 @@ class Settings:
                             self.height = screen.get_height()
                             audio_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35, button_width, button_height,
-                                "", "Assets/Buttons/audio_button.png",
+                                self.height * 0.35,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/audio_button.png",
                                 "Assets/Buttons/audio_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             video_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45, button_width, button_height,
-                                "", "Assets/Buttons/video_button.png",
+                                self.height * 0.45,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/video_button.png",
                                 "Assets/Buttons/video_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55, button_width, button_height,
-                                "", "Assets/Buttons/exit_button.png",
+                                self.height * 0.55,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/exit_button.png",
                                 "Assets/Buttons/exit_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                     elif event.button == back_button:
                         self.fade_screen(screen)
@@ -319,21 +360,36 @@ class Settings:
 
         button_width, button_height = 252, 74
         mute_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.35,
-            button_width, button_height, "", "Assets/Buttons/mute_button.png",
-            "Assets/Buttons/mute_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.35,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/mute_button.png",
+            "Assets/Buttons/mute_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
         save_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.45,
-            button_width, button_height, "", "Assets/Buttons/save_button.png",
-            "Assets/Buttons/save_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.45,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/save_button.png",
+            "Assets/Buttons/save_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.55,
-            button_width, button_height, "", "Assets/Buttons/back_button.png",
-            "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.55,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/back_button.png",
+            "Assets/Buttons/back_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
 
@@ -483,25 +539,37 @@ class Settings:
                             (self.width, self.height), pygame.RESIZABLE
                         )
                         mute_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.35,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.35,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/mute_button.png",
                             "Assets/Buttons/mute_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                         save_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.45,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.45,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/save_button.png",
                             "Assets/Buttons/save_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                         back_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.55,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.55,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/back_button.png",
                             "Assets/Buttons/back_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
 
                 mute_button.handle_event(event)
@@ -527,29 +595,47 @@ class Settings:
 
         button_width, button_height = 252, 74
         fullscreen_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.35,
-            button_width, button_height, "",
+            (self.width - button_width) / 2,
+            self.height * 0.35,
+            button_width,
+            button_height,
+            "",
             "Assets/Buttons/fullscreen_button.png",
             "Assets/Buttons/fullscreen_button_hover.png",
-            "Assets/Sounds/click.mp3", self
+            "Assets/Sounds/click.mp3",
+            self
         )
         resolution_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.45,
-            button_width, button_height, "",
+            (self.width - button_width) / 2,
+            self.height * 0.45,
+            button_width,
+            button_height,
+            "",
             "Assets/Buttons/resolution_button.png",
             "Assets/Buttons/resolution_button_hover.png",
-            "Assets/Sounds/click.mp3", self
+            "Assets/Sounds/click.mp3",
+            self
         )
         save_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.55,
-            button_width, button_height, "", "Assets/Buttons/save_button.png",
-            "Assets/Buttons/save_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.55,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/save_button.png",
+            "Assets/Buttons/save_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
         back_button = ImageButton(
-            (self.width - button_width) / 2, self.height * 0.65,
-            button_width, button_height, "", "Assets/Buttons/back_button.png",
-            "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3",
+            (self.width - button_width) / 2,
+            self.height * 0.65,
+            button_width,
+            button_height,
+            "",
+            "Assets/Buttons/back_button.png",
+            "Assets/Buttons/back_button_hover.png",
+            "Assets/Sounds/click.mp3",
             self
         )
 
@@ -610,31 +696,47 @@ class Settings:
                             self.fade_screen(screen)
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35, button_width, button_height,
-                                "", "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45, button_width, button_height,
-                                "", "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55, button_width, button_height,
-                                "", "Assets/Buttons/save_button.png",
+                                self.height * 0.55,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/save_button.png",
                                 "Assets/Buttons/save_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65, button_width, button_height,
-                                "", "Assets/Buttons/back_button.png",
+                                self.height * 0.65,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/back_button.png",
                                 "Assets/Buttons/back_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                 if event.type == pygame.VIDEORESIZE:
                     if not self.fullscreen:
@@ -648,32 +750,48 @@ class Settings:
                             (self.width, self.height), pygame.RESIZABLE
                         )
                         fullscreen_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.35,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.35,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/fullscreen_button.png",
                             "Assets/Buttons/fullscreen_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                         resolution_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.45,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.45,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/resolution_button.png",
                             "Assets/Buttons/resolution_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                         save_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.55,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.55,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/save_button.png",
                             "Assets/Buttons/save_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                         back_button = ImageButton(
-                            (self.width - button_width) / 2, self.height * 0.65,
-                            button_width, button_height, "",
+                            (self.width - button_width) / 2,
+                            self.height * 0.65,
+                            button_width,
+                            button_height,
+                            "",
                             "Assets/Buttons/back_button.png",
                             "Assets/Buttons/back_button_hover.png",
-                            "Assets/Sounds/click.mp3", self
+                            "Assets/Sounds/click.mp3",
+                            self
                         )
                 if event.type == pygame.USEREVENT:
                     if event.button == resolution_button:
@@ -683,31 +801,47 @@ class Settings:
                             self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35, button_width, button_height,
-                                "", "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45, button_width, button_height,
-                                "", "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55, button_width, button_height,
-                                "", "Assets/Buttons/save_button.png",
+                                self.height * 0.55,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/save_button.png",
                                 "Assets/Buttons/save_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65, button_width, button_height,
-                                "", "Assets/Buttons/back_button.png",
+                                self.height * 0.65,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/back_button.png",
                                 "Assets/Buttons/back_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                     elif event.button == fullscreen_button:
                         screen = self.toggle_fullscreen(screen)
@@ -716,31 +850,47 @@ class Settings:
                             self.height = screen.get_height()
                             fullscreen_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.35, button_width, button_height,
-                                "", "Assets/Buttons/fullscreen_button.png",
+                                self.height * 0.35,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/fullscreen_button.png",
                                 "Assets/Buttons/fullscreen_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             resolution_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.45, button_width, button_height,
-                                "", "Assets/Buttons/resolution_button.png",
+                                self.height * 0.45,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/resolution_button.png",
                                 "Assets/Buttons/resolution_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             save_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.55, button_width, button_height,
-                                "", "Assets/Buttons/save_button.png",
+                                self.height * 0.55,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/save_button.png",
                                 "Assets/Buttons/save_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                             back_button = ImageButton(
                                 (self.width - button_width) / 2,
-                                self.height * 0.65, button_width, button_height,
-                                "", "Assets/Buttons/back_button.png",
+                                self.height * 0.65,
+                                button_width,
+                                button_height,
+                                "",
+                                "Assets/Buttons/back_button.png",
                                 "Assets/Buttons/back_button_hover.png",
-                                "Assets/Sounds/click.mp3", self
+                                "Assets/Sounds/click.mp3",
+                                self
                             )
                     elif event.button == save_button:
                         self.save_settings()
