@@ -15,7 +15,7 @@ video_path = "Assets/Background/lvl1.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Limit video frame rate for optimization
-cap.set(cv2.CAP_PROP_FPS, 60)  # Set 30 FPS for stability
+cap.set(cv2.CAP_PROP_FPS, 60)  # Set 60 FPS for stability
 cap.set(cv2.CAP_PROP_BUFFERSIZE, 1000)   # Increase buffer for fast frame reading
 
 # Now initialize settings with cap
@@ -38,13 +38,13 @@ settings.load_and_play_music()
 
 # Initialize buttons with current resolution
 start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "",
-                           "Assets/Buttons/new_game_button.png",
+                          "Assets/Buttons/new_game_button.png",
                           "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
 settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "",
-                              "Assets/Buttons/settings_button.png",
+                             "Assets/Buttons/settings_button.png",
                              "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
 exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "",
-                          "Assets/Buttons/exit_button.png",
+                         "Assets/Buttons/exit_button.png",
                          "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
 def draw_text_with_outline(text, font, text_color, outline_color, x, y, surface):
@@ -73,7 +73,7 @@ def main_menu():
     global screen, cap, start_button, settings_button, exit_button
     running = True
     clock = pygame.time.Clock()  # Add Clock for FPS management
-    last_frame = None # Buffer for the last video frame
+    last_frame = None  # Buffer for the last video frame
 
     while running:
         try:
@@ -96,9 +96,9 @@ def main_menu():
             last_frame = frame_surface  # Save last frame
             screen.blit(frame_surface, (0, 0))
         except Exception as e:
-            print(f"ОVideo download error (Menu): {e}")
+            print(f"Video download error (Menu): {e}")
             if last_frame:
-                screen.blit(last_frame, (0, 0)) # Use last successful frame if error
+                screen.blit(last_frame, (0, 0))  # Use last successful frame if error
             else:
                 screen.fill((0, 0, 0))  # Black screen only if no buffer available
 
@@ -116,8 +116,7 @@ def main_menu():
             if event.type == pygame.USEREVENT:
                 if event.button == start_button:
                     fade_screen()
-                    # restore menu
-                    select_level()
+                    select_level(settings)  # Pass settings to select_level
                 elif event.button == settings_button:
                     fade_screen()
                     screen = settings.settings_menu(screen, font, lambda text, f, tc, oc, x, y: draw_text_with_outline(text, f, tc, oc, x, y, screen), main_menu)
@@ -125,13 +124,13 @@ def main_menu():
                         settings.width, settings.height = screen.get_width(), screen.get_height()
 
                         start_button = ImageButton((settings.width - 252) / 2, settings.height * 0.35, 252, 74, "",
-                                                   "Assets/Buttons/new_game_button.png",
+                                                  "Assets/Buttons/new_game_button.png",
                                                   "Assets/Buttons/new_game_button_hover.png", "Assets/Sounds/click.mp3", settings)
                         settings_button = ImageButton((settings.width - 252) / 2, settings.height * 0.45, 252, 74, "",
-                                                      "Assets/Buttons/settings_button.png",
+                                                     "Assets/Buttons/settings_button.png",
                                                      "Assets/Buttons/settings_button_hover.png", "Assets/Sounds/click.mp3", settings)
                         exit_button = ImageButton((settings.width - 252) / 2, settings.height * 0.55, 252, 74, "",
-                                                  "Assets/Buttons/exit_button.png",
+                                                 "Assets/Buttons/exit_button.png",
                                                  "Assets/Buttons/exit_button_hover.png", "Assets/Sounds/click.mp3", settings)
                 elif event.button == exit_button:
                     fade_screen()
@@ -146,7 +145,7 @@ def main_menu():
             btn.draw(screen)
 
         pygame.display.flip()
-        clock.tick(60)  #60 fps
+        clock.tick(60)  # 60 fps
 
     cap.release()
     pygame.quit()
@@ -168,10 +167,10 @@ def levelScreenSettings(game_last_frame, last_frame):
         screen.blit(last_frame, (0, 0))
         pygame.display.flip()
 
-def select_level():
-    global screen, cap, settings
+def select_level(settings):
+    global screen, cap
     running = True
-    clock = pygame.time.Clock()  #for fps control
+    clock = pygame.time.Clock()  # for fps control
     last_frame = None  # last video frame
 
     if screen is None:
@@ -213,8 +212,8 @@ def select_level():
                            "Assets/Buttons/level_but_9.png",
                            "Assets/Buttons/level_but_hover_9.png", "Assets/Sounds/click.mp3", settings)
     back_button = ImageButton((settings.width - 252) / 2, settings.height * 0.65, 252, 74, "",
-                              "Assets/Buttons/back_button.png",
-                              "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3", settings)
+                             "Assets/Buttons/back_button.png",
+                             "Assets/Buttons/back_button_hover.png", "Assets/Sounds/click.mp3", settings)
 
     while running:
         try:
@@ -240,7 +239,7 @@ def select_level():
             if last_frame:
                 screen.blit(last_frame, (0, 0))
             else:
-                screen.fill((0, 0, 0))  #if no background
+                screen.fill((0, 0, 0))  # if no background
 
         draw_text_with_outline("Select level", font, (255, 255, 255), (0, 0, 0), settings.width / 2, settings.height * 0.2, screen)
 
@@ -264,31 +263,31 @@ def select_level():
                     pygame.mixer.music.set_volume(settings.get_volume())
                     pygame.mixer.music.play(-1)
                     if event.button == Lbutton1:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=0, birdLevelCount=6, levelType=1, ammoLevel=0)
                     elif event.button == Lbutton2:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=0, birdLevelCount=6, levelType=2, ammoLevel=0)
                     elif event.button == Lbutton3:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=1, birdLevelCount=8, levelType=3, ammoLevel=1)
                     elif event.button == Lbutton4:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=1, birdLevelCount=10, levelType=4, ammoLevel=1)
                     elif event.button == Lbutton5:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=1, birdLevelCount=12, levelType=5, ammoLevel=1)
                     elif event.button == Lbutton6:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=1, birdLevelCount=14, levelType=6, ammoLevel=2)
                     elif event.button == Lbutton7:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=2, birdLevelCount=16, levelType=7, ammoLevel=2)
                     elif event.button == Lbutton8:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=2, birdLevelCount=18, levelType=8, ammoLevel=3)
                     elif event.button == Lbutton9:
-                        game = Game(fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
+                        game = Game(settings=settings, fullscreen=settings.fullscreen, cap=cap, screen=screen, last_frame=last_frame,
                                     bird_speed=2, birdLevelCount=25, levelType=9, ammoLevel=3)
                     game_last_frame = game.start_level()
                     levelScreenSettings(game_last_frame, last_frame)
@@ -313,7 +312,7 @@ def select_level():
             btn.draw(screen)
 
         pygame.display.flip()
-        clock.tick(60)  #60 fps
+        clock.tick(60)  # 60 fps
 
 def main():
     main_menu()
