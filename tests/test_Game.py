@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 from Game import Game
 
-# Комбіноване мокування: init і Sound
+
 @pytest.mark.basic
 @patch("pygame.mixer.init", return_value=None)
 @patch("pygame.mixer.Sound", return_value=None)
