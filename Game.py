@@ -8,7 +8,10 @@ import sys
 class Game:
     def __init__(self, fullscreen=False, cap=None, screen=None, last_frame=None, bird_speed = None, birdLevelCount = None,
                  levelType = None, ammoLevel = None):
-        pygame.mixer.init()
+        try:
+            pygame.mixer.init()
+        except pygame.error as e:
+            print(f"Audio init failed: {e}")
         self.start_time = None #it does nothing but don't touch it. Attribute warning
         self.running = None #it does nothing but don't touch it. Attribute warning
         info = pygame.display.Info()

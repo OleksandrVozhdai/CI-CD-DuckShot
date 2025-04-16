@@ -4,7 +4,7 @@ import pygame
 import pytest
 import sys
 import os
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..')))
@@ -51,6 +51,11 @@ def button(button_setup, dummy_button_settings):
 @pytest.fixture(scope="session", autouse=True)
 def set_cwd_to_project_root():
     os.chdir(os.path.dirname(os.path.dirname(__file__)))
+
+@pytest.fixture(autouse=True)
+def mock_pygame_mixer_init():
+    with patch("pygame.mixer.init"):
+        yield
 
 @pytest.fixture
 def dummy_screen():
